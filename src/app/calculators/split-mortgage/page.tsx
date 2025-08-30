@@ -27,6 +27,8 @@ export default function SplitMortgageCalculatorPage() {
     setPerson2Deposit,
     person1RepaymentShare,
     setPerson1RepaymentShare,
+    salePrice,
+    setSalePrice,
     rate,
     setRate,
     termYears,
@@ -61,6 +63,7 @@ export default function SplitMortgageCalculatorPage() {
     person1Deposit,
     person2Deposit,
     person1RepaymentShare,
+    salePrice,
   };
 
   const handleLoadPreset = (preset: MortgagePreset) => {
@@ -69,9 +72,14 @@ export default function SplitMortgageCalculatorPage() {
     setTermYears(preset.data.termYears);
     setFrequency(preset.data.frequency);
     setSelectedYear(preset.data.selectedYear);
-    if (preset.data.person1Deposit !== undefined) setPerson1Deposit(preset.data.person1Deposit);
-    if (preset.data.person2Deposit !== undefined) setPerson2Deposit(preset.data.person2Deposit);
-    if (preset.data.person1RepaymentShare !== undefined) setPerson1RepaymentShare(preset.data.person1RepaymentShare);
+    if (preset.data.person1Deposit !== undefined)
+      setPerson1Deposit(preset.data.person1Deposit);
+    if (preset.data.person2Deposit !== undefined)
+      setPerson2Deposit(preset.data.person2Deposit);
+    if (preset.data.person1RepaymentShare !== undefined)
+      setPerson1RepaymentShare(preset.data.person1RepaymentShare);
+    if (preset.data.salePrice !== undefined)
+      setSalePrice(preset.data.salePrice);
   };
 
   return (
@@ -204,8 +212,8 @@ export default function SplitMortgageCalculatorPage() {
 
                      <FrequencySelector value={frequency} onChange={setFrequency} />
 
-           <div className="border-t border-black/10 dark:border-white/15 pt-4">
-                           <PresetManager
+                      <div className="border-t border-black/10 dark:border-white/15 pt-4">
+              <PresetManager
                 presets={presets}
                 onSavePreset={savePreset}
                 onLoadPreset={handleLoadPreset}
@@ -213,8 +221,8 @@ export default function SplitMortgageCalculatorPage() {
                 currentData={currentData}
                 type="split"
               />
-           </div>
-         </div>
+            </div>
+          </div>
 
         <div className="space-y-4">
           {hasErrors && (
@@ -279,55 +287,55 @@ export default function SplitMortgageCalculatorPage() {
             </p>
           </ResultsCard>
 
-                     <ResultsCard
-             title={`Equity split at ${selectedYear === 'deposit' ? 'deposit only' : selectedYear === 'first' ? 'start' : `year ${selectedYear}`}`}
-           >
-             <ResultsGrid
-               items={[
-                 {
-                   label: 'Person 1 equity',
-                   value: formatCurrency(results.person1Equity),
-                 },
-                 {
-                   label: 'Person 2 equity',
-                   value: formatCurrency(results.person2Equity),
-                 },
-                 {
-                   label: 'Person 1 share',
-                   value: `${results.person1EquityShare.toFixed(1)}%`,
-                 },
-                 {
-                   label: 'Person 2 share',
-                   value: `${results.person2EquityShare.toFixed(1)}%`,
-                 },
-               ]}
-             />
-             
-             <div className="border-t border-black/10 dark:border-white/15 my-4" />
-             
-             <ResultsGrid
-               items={[
-                 {
-                   label: 'Person 1 total interest',
-                   value: formatCurrency(results.person1TotalInterest),
-                 },
-                 {
-                   label: 'Person 2 total interest',
-                   value: formatCurrency(results.person2TotalInterest),
-                 },
-                 {
-                   label: 'Person 1 principal gained',
-                   value: formatCurrency(results.person1Equity - person1Deposit),
-                 },
-                 {
-                   label: 'Person 2 principal gained',
-                   value: formatCurrency(results.person2Equity - person2Deposit),
-                 },
-               ]}
-             />
-           </ResultsCard>
+          <ResultsCard
+            title={`Equity split at ${selectedYear === 'deposit' ? 'deposit only' : selectedYear === 'first' ? 'start' : `year ${selectedYear}`}`}
+          >
+            <ResultsGrid
+              items={[
+                {
+                  label: 'Person 1 equity',
+                  value: formatCurrency(results.person1Equity),
+                },
+                {
+                  label: 'Person 2 equity',
+                  value: formatCurrency(results.person2Equity),
+                },
+                {
+                  label: 'Person 1 share',
+                  value: `${results.person1EquityShare.toFixed(1)}%`,
+                },
+                {
+                  label: 'Person 2 share',
+                  value: `${results.person2EquityShare.toFixed(1)}%`,
+                },
+              ]}
+            />
 
-          <ResultsCard title="Totals over the loan">
+            <div className="border-t border-black/10 dark:border-white/15 my-4" />
+
+            <ResultsGrid
+              items={[
+                {
+                  label: 'Person 1 total interest',
+                  value: formatCurrency(results.person1TotalInterest),
+                },
+                {
+                  label: 'Person 2 total interest',
+                  value: formatCurrency(results.person2TotalInterest),
+                },
+                {
+                  label: 'Person 1 principal gained',
+                  value: formatCurrency(results.person1Equity - person1Deposit),
+                },
+                {
+                  label: 'Person 2 principal gained',
+                  value: formatCurrency(results.person2Equity - person2Deposit),
+                },
+              ]}
+            />
+                     </ResultsCard>
+
+           <ResultsCard title="Totals over the loan">
             <ResultsGrid
               items={[
                 {
@@ -362,9 +370,95 @@ export default function SplitMortgageCalculatorPage() {
                 payments
               </li>
             </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+                     </div>
+         </div>
+       </div>
+
+       {/* Sale Price Calculator Section */}
+       <div className="border-t-2 border-black/20 dark:border-white/20 pt-8 mt-8">
+         <div className="grid gap-6 sm:grid-cols-2">
+           <div className="space-y-4">
+             <h2 className="text-lg font-medium">Sale Price Calculator</h2>
+             <NumberFormField
+               label="Sale price"
+               id="sale-price"
+               value={salePrice}
+               onChange={setSalePrice}
+               error={validationErrors.salePrice}
+               min={0}
+               step={1000}
+               formatValue={formatInputNumber}
+               parseValue={parseInputNumber}
+               helpText="Enter the sale price to calculate proceeds distribution"
+             />
+           </div>
+
+           <div className="space-y-4">
+             {salePrice > 0 && (
+                               <ResultsCard title="Sale Proceeds Distribution">
+                  <ResultsGrid
+                    items={[
+                      {
+                        label: 'Sale price',
+                        value: formatCurrency(results.saleProceeds),
+                      },
+                      {
+                        label: 'Remaining mortgage',
+                        value: formatCurrency(results.remainingBalance),
+                      },
+                      {
+                        label: 'Net proceeds',
+                        value: formatCurrency(results.netProceeds),
+                      },
+                      {
+                        label: 'Total profit/loss',
+                        value: formatCurrency(results.saleProfit),
+                      },
+                    ]}
+                  />
+                  
+                  <div className="border-t border-black/10 dark:border-white/15 my-4" />
+                  
+                  <ResultsGrid
+                    items={[
+                      {
+                        label: 'Person 1 proceeds',
+                        value: formatCurrency(results.person1SaleProceeds),
+                      },
+                      {
+                        label: 'Person 2 proceeds',
+                        value: formatCurrency(results.person2SaleProceeds),
+                      },
+                      {
+                        label: 'Person 1 profit/loss',
+                        value: formatCurrency(results.person1SaleProfit),
+                      },
+                      {
+                        label: 'Person 2 profit/loss',
+                        value: formatCurrency(results.person2SaleProfit),
+                      },
+                    ]}
+                  />
+                  
+                  <div className="border-t border-black/10 dark:border-white/15 my-4" />
+                  
+                  <ResultsGrid
+                    items={[
+                      {
+                        label: 'Person 1 share of profit',
+                        value: `${results.person1EquityShare.toFixed(1)}%`,
+                      },
+                      {
+                        label: 'Person 2 share of profit',
+                        value: `${results.person2EquityShare.toFixed(1)}%`,
+                      },
+                    ]}
+                  />
+               </ResultsCard>
+             )}
+           </div>
+         </div>
+       </div>
+     </div>
+   );
+ }

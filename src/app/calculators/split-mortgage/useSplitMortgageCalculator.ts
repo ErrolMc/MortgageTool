@@ -10,6 +10,11 @@ import {
   type ValidationErrors,
 } from '@/hooks/useBaseMortgageCalculator';
 
+// Extend ValidationErrors for split mortgage specific fields
+interface SplitValidationErrors extends ValidationErrors {
+  salePrice?: string;
+}
+
 // Re-export for convenience
 export { formatCurrency, formatInputNumber, parseInputNumber, type YearOption };
 
@@ -43,12 +48,13 @@ export function useSplitMortgageCalculator() {
   );
   const [person1RepaymentShare, setPerson1RepaymentShare] =
     useState<number>(0.5);
+  const [salePrice, setSalePrice] = useState<number>(0);
 
   const totalDeposit = person1Deposit + person2Deposit;
   const splitPrincipal: number = Math.max(0, (price || 0) - totalDeposit);
 
   // Extended validation for split mortgage
-  const validationErrors: ValidationErrors = {
+  const validationErrors: SplitValidationErrors = {
     ...baseValidationErrors,
   };
 
@@ -67,6 +73,8 @@ export function useSplitMortgageCalculator() {
   if (person1RepaymentShare > 1)
     validationErrors.person1RepaymentShare =
       'Repayment share cannot exceed 100%';
+  if (salePrice < 0)
+    validationErrors.salePrice = 'Sale price cannot be negative';
 
   const results = useMemo(() => {
     const freq: Frequency = frequency;
@@ -189,6 +197,31 @@ export function useSplitMortgageCalculator() {
     const person2EquityShare: number =
       totalEquity > 0 ? (person2Equity / totalEquity) * 100 : 0;
 
+    // Calculate sale proceeds distribution
+    const saleProceeds = salePrice || 0;
+    
+    // Calculate remaining mortgage balance at the selected year
+    let remainingBalance = splitPrincipal;
+    if (selectedYear !== 'deposit') {
+      const yearNumber = selectedYear === 'first' ? 0 : parseInt(selectedYear);
+      const periodsToYear = yearNumber * periodsPerYear;
+      
+      // Calculate remaining balance after payments up to the selected year
+      for (let i = 0; i < periodsToYear; i++) {
+        const periodInterest = remainingBalance * r;
+        const periodPrincipal = payment - periodInterest;
+        remainingBalance -= periodPrincipal;
+      }
+    }
+    
+    // Calculate net proceeds after paying off remaining mortgage
+    const netProceeds = saleProceeds - remainingBalance;
+    const person1SaleProceeds = totalEquity > 0 ? (person1Equity / totalEquity) * netProceeds : 0;
+    const person2SaleProceeds = totalEquity > 0 ? (person2Equity / totalEquity) * netProceeds : 0;
+    const saleProfit = netProceeds - totalEquity;
+    const person1SaleProfit = totalEquity > 0 ? (person1Equity / totalEquity) * saleProfit : 0;
+    const person2SaleProfit = totalEquity > 0 ? (person2Equity / totalEquity) * saleProfit : 0;
+
     return {
       payment,
       person1Payment,
@@ -206,6 +239,14 @@ export function useSplitMortgageCalculator() {
       person2EquityShare,
       person1TotalInterest,
       person2TotalInterest,
+      saleProceeds,
+      remainingBalance,
+      netProceeds,
+      person1SaleProceeds,
+      person2SaleProceeds,
+      saleProfit,
+      person1SaleProfit,
+      person2SaleProfit,
     };
   }, [
     splitPrincipal,
@@ -216,6 +257,7 @@ export function useSplitMortgageCalculator() {
     person1Deposit,
     person2Deposit,
     person1RepaymentShare,
+    salePrice,
   ]);
 
   const resetForm = () => {
@@ -223,6 +265,7 @@ export function useSplitMortgageCalculator() {
     setPerson1Deposit(baseCalculator.deposit / 2);
     setPerson2Deposit(baseCalculator.deposit / 2);
     setPerson1RepaymentShare(0.5);
+    setSalePrice(0);
   };
 
   return {
@@ -235,6 +278,8 @@ export function useSplitMortgageCalculator() {
     setPerson2Deposit,
     person1RepaymentShare,
     setPerson1RepaymentShare,
+    salePrice,
+    setSalePrice,
     rate,
     setRate,
     termYears,
