@@ -130,7 +130,13 @@ export function useSplitMortgageCalculator() {
     let person1TotalInterest: number = 0;
     let person2TotalInterest: number = 0;
 
-    if (selectedYear === 'first') {
+    if (selectedYear === 'deposit') {
+      // Deposit only - no payments made yet
+      person1Equity = person1Deposit;
+      person2Equity = person2Deposit;
+      person1TotalInterest = 0;
+      person2TotalInterest = 0;
+    } else if (selectedYear === 'first') {
       // For first payment, include the principal portion of that payment
       const person1PrincipalContribution: number =
         paymentPrincipal * person1RepaymentShare;

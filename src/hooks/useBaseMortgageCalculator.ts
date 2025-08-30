@@ -9,7 +9,7 @@ import {
 } from '@/constants/mortgage';
 
 export type Frequency = 'yearly' | 'monthly' | 'fortnightly' | 'weekly';
-export type YearOption = 'first' | '5' | '10' | '15' | '20' | '25' | '27' | '29' | '30';
+export type YearOption = 'deposit' | 'first' | '5' | '10' | '15' | '20' | '25' | '27' | '29' | '30';
 
 export const FREQUENCY_LABEL: Record<Frequency, string> = {
   yearly: 'Yearly',
@@ -26,6 +26,7 @@ export const PERIODS_PER_YEAR: Record<Frequency, number> = {
 };
 
 export const YEAR_OPTIONS: { value: YearOption; label: string }[] = [
+  { value: 'deposit', label: 'Deposit only' },
   { value: 'first', label: 'First payment' },
   { value: '5', label: 'Year 5' },
   { value: '10', label: 'Year 10' },

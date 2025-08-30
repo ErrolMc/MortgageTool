@@ -243,7 +243,7 @@ export default function SplitMortgageCalculatorPage() {
           </ResultsCard>
 
                      <ResultsCard
-             title={`Equity split at ${selectedYear === 'first' ? 'start' : `year ${selectedYear}`}`}
+             title={`Equity split at ${selectedYear === 'deposit' ? 'deposit only' : selectedYear === 'first' ? 'start' : `year ${selectedYear}`}`}
            >
              <ResultsGrid
                items={[
