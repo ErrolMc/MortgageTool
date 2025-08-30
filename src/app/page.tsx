@@ -17,12 +17,15 @@ export default function Home() {
             Estimate repayments by rate, term, price, and deposit.
           </p>
         </a>
-        <div className="block rounded-lg border border-black/10 dark:border-white/10 p-4 opacity-70">
-          <h2 className="font-medium">Extra Repayments</h2>
+        <a
+          href="/calculators/split-mortgage"
+          className="block rounded-lg border border-black/10 dark:border-white/10 p-4 hover:bg-black/[.03] dark:hover:bg-white/[.03] transition"
+        >
+          <h2 className="font-medium">Split Mortgage Calculator</h2>
           <p className="text-sm text-black/70 dark:text-white/70">
-            Coming soon
+            Calculate equity split and repayments between two people.
           </p>
-        </div>
+        </a>
       </section>
     </div>
   );
