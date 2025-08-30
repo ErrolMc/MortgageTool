@@ -9,7 +9,11 @@ import {
 } from './useSplitMortgageCalculator';
 import { NumberFormField } from '@/components/ui/FormField';
 import { FrequencySelector } from '@/components/ui/FrequencySelector';
-import { ResultsCard, ResultsGrid, ResultsRow } from '@/components/ui/ResultsCard';
+import {
+  ResultsCard,
+  ResultsGrid,
+  ResultsRow,
+} from '@/components/ui/ResultsCard';
 
 export default function SplitMortgageCalculatorPage() {
   const {
@@ -83,7 +87,7 @@ export default function SplitMortgageCalculatorPage() {
 
           <div className="space-y-3">
             <h3 className="font-medium text-sm">Deposits</h3>
-            
+
             <NumberFormField
               label="Person 1 deposit"
               id="person1-deposit"
@@ -113,8 +117,20 @@ export default function SplitMortgageCalculatorPage() {
             <div className="text-xs text-black/60 dark:text-white/60 space-y-1 p-3 bg-black/5 dark:bg-white/5 rounded-md">
               <p>Total deposit: {formatCurrency(totalDeposit)}</p>
               <p>Loan amount: {formatCurrency(principal)}</p>
-              <p>Person 1: {formatCurrency(person1Deposit)} ({totalDeposit > 0 ? ((person1Deposit / totalDeposit) * 100).toFixed(1) : '0'}%)</p>
-              <p>Person 2: {formatCurrency(person2Deposit)} ({totalDeposit > 0 ? ((person2Deposit / totalDeposit) * 100).toFixed(1) : '0'}%)</p>
+              <p>
+                Person 1: {formatCurrency(person1Deposit)} (
+                {totalDeposit > 0
+                  ? ((person1Deposit / totalDeposit) * 100).toFixed(1)
+                  : '0'}
+                %)
+              </p>
+              <p>
+                Person 2: {formatCurrency(person2Deposit)} (
+                {totalDeposit > 0
+                  ? ((person2Deposit / totalDeposit) * 100).toFixed(1)
+                  : '0'}
+                %)
+              </p>
             </div>
           </div>
 
@@ -131,7 +147,8 @@ export default function SplitMortgageCalculatorPage() {
           />
 
           <div className="text-xs text-black/60 dark:text-white/60 p-2 bg-black/5 dark:bg-white/5 rounded">
-            Person 1: {person1RepaymentSharePercent.toFixed(0)}% | Person 2: {person2RepaymentSharePercent.toFixed(0)}%
+            Person 1: {person1RepaymentSharePercent.toFixed(0)}% | Person 2:{' '}
+            {person2RepaymentSharePercent.toFixed(0)}%
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -159,10 +176,7 @@ export default function SplitMortgageCalculatorPage() {
             />
           </div>
 
-          <FrequencySelector
-            value={frequency}
-            onChange={setFrequency}
-          />
+          <FrequencySelector value={frequency} onChange={setFrequency} />
         </div>
 
         <div className="space-y-4">
@@ -228,24 +242,70 @@ export default function SplitMortgageCalculatorPage() {
             </p>
           </ResultsCard>
 
-          <ResultsCard title={`Equity split at ${selectedYear === 'first' ? 'start' : `year ${selectedYear}`}`}>
-            <ResultsGrid
-              items={[
-                { label: 'Person 1 equity', value: formatCurrency(results.person1Equity) },
-                { label: 'Person 2 equity', value: formatCurrency(results.person2Equity) },
-                { label: 'Person 1 share', value: `${results.person1EquityShare.toFixed(1)}%` },
-                { label: 'Person 2 share', value: `${results.person2EquityShare.toFixed(1)}%` },
-              ]}
-            />
-          </ResultsCard>
+                     <ResultsCard
+             title={`Equity split at ${selectedYear === 'first' ? 'start' : `year ${selectedYear}`}`}
+           >
+             <ResultsGrid
+               items={[
+                 {
+                   label: 'Person 1 equity',
+                   value: formatCurrency(results.person1Equity),
+                 },
+                 {
+                   label: 'Person 2 equity',
+                   value: formatCurrency(results.person2Equity),
+                 },
+                 {
+                   label: 'Person 1 share',
+                   value: `${results.person1EquityShare.toFixed(1)}%`,
+                 },
+                 {
+                   label: 'Person 2 share',
+                   value: `${results.person2EquityShare.toFixed(1)}%`,
+                 },
+               ]}
+             />
+             
+             <div className="border-t border-black/10 dark:border-white/15 my-4" />
+             
+             <ResultsGrid
+               items={[
+                 {
+                   label: 'Person 1 total interest',
+                   value: formatCurrency(results.person1TotalInterest),
+                 },
+                 {
+                   label: 'Person 2 total interest',
+                   value: formatCurrency(results.person2TotalInterest),
+                 },
+                 {
+                   label: 'Person 1 principal gained',
+                   value: formatCurrency(results.person1Equity - person1Deposit),
+                 },
+                 {
+                   label: 'Person 2 principal gained',
+                   value: formatCurrency(results.person2Equity - person2Deposit),
+                 },
+               ]}
+             />
+           </ResultsCard>
 
           <ResultsCard title="Totals over the loan">
             <ResultsGrid
               items={[
-                { label: 'Total payments', value: formatCurrency(results.totalPaid) },
-                { label: 'Principal', value: formatCurrency(results.principal) },
+                {
+                  label: 'Total payments',
+                  value: formatCurrency(results.totalPaid),
+                },
+                {
+                  label: 'Principal',
+                  value: formatCurrency(results.principal),
+                },
                 { label: 'Interest', value: formatCurrency(results.interest) },
-                { label: 'Number of payments', value: results.n.toLocaleString() },
+                {
+                  label: 'Number of payments',
+                  value: results.n.toLocaleString(),
+                },
               ]}
             />
           </ResultsCard>
@@ -255,10 +315,15 @@ export default function SplitMortgageCalculatorPage() {
               Important Notes
             </h3>
             <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-              <li>• Uses a nominal annual rate divided by the selected frequency</li>
+              <li>
+                • Uses a nominal annual rate divided by the selected frequency
+              </li>
               <li>• Actual lender calculations may differ slightly</li>
               <li>• This is for estimation purposes only</li>
-              <li>• Equity calculations assume equal contribution to principal payments</li>
+              <li>
+                • Equity calculations assume equal contribution to principal
+                payments
+              </li>
             </ul>
           </div>
         </div>
