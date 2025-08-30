@@ -188,15 +188,18 @@ export default function SplitMortgageCalculatorPage() {
               <p>Person 2: {formatCurrency(results.person2Payment)}</p>
             </div>
 
-            <div className="mt-4">
+            <div className="mt-3">
               <label className="block text-sm mb-2">
                 Payment breakdown for:
               </label>
               <select
                 value={selectedYear}
                 onChange={e => setSelectedYear(e.target.value as YearOption)}
-                className="w-full rounded-md border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 px-3 py-2 text-sm"
-                aria-label="Select year for payment breakdown"
+                className="w-full rounded-md border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 px-3 py-2 text-sm text-black dark:text-white [&>option]:bg-black/5 [&>option]:dark:bg-white/5 [&>option]:text-black [&>option]:dark:text-white"
+                style={{
+                  backgroundColor: 'var(--background)',
+                  color: 'var(--foreground)',
+                }}
               >
                 {YEAR_OPTIONS.map(option => (
                   <option key={option.value} value={option.value}>
@@ -207,8 +210,18 @@ export default function SplitMortgageCalculatorPage() {
             </div>
 
             <div className="mt-3 space-y-1">
-              <ResultsRow label="Principal" value={formatCurrency(results.paymentPrincipal)} />
-              <ResultsRow label="Interest" value={formatCurrency(results.paymentInterest)} />
+              <div className="text-sm">
+                <span className="text-black/70 dark:text-white/70">
+                  Principal{' '}
+                </span>
+                <span>{formatCurrency(results.paymentPrincipal)}</span>
+              </div>
+              <div className="text-sm">
+                <span className="text-black/70 dark:text-white/70">
+                  Interest{' '}
+                </span>
+                <span>{formatCurrency(results.paymentInterest)}</span>
+              </div>
             </div>
             <p className="text-xs text-black/60 dark:text-white/60 mt-2">
               per {frequency === 'yearly' ? 'year' : frequency}
