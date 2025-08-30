@@ -6,6 +6,15 @@ import {
   type Frequency,
   type YearOption,
 } from './useMortgageCalculator';
+import {
+  formatInputNumber,
+  parseInputNumber,
+} from '@/hooks/useBaseMortgageCalculator';
+import {
+  ResultsCard,
+  ResultsGrid,
+} from '@/components/ui/ResultsCard';
+import { NumberFormField } from '@/components/ui/FormField';
 import { usePresets, type MortgagePreset } from '@/hooks/usePresets';
 import { PresetManager } from '@/components/ui/PresetManager';
 
@@ -63,58 +72,55 @@ export default function MortgageCalculatorPage() {
 
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm mb-1">House price</label>
-            <input
-              type="number"
-              className="w-full rounded-md border border-black/10 dark:border-white/15 bg-transparent px-3 py-2"
-              min={INPUT_CONSTRAINTS.housePrice.min}
-              step={INPUT_CONSTRAINTS.housePrice.step}
-              value={Number.isFinite(price) ? price : 0}
-              onChange={e => setPrice(parseFloat(e.target.value) || 0)}
-            />
-          </div>
+          <NumberFormField
+            label="House price"
+            id="house-price"
+            value={price}
+            onChange={setPrice}
+            min={INPUT_CONSTRAINTS.housePrice.min}
+            step={INPUT_CONSTRAINTS.housePrice.step}
+            formatValue={formatInputNumber}
+            parseValue={parseInputNumber}
+            helpText="Enter the total purchase price of the property"
+          />
 
-          <div>
-            <label className="block text-sm mb-1">Deposit</label>
-            <input
-              type="number"
-              className="w-full rounded-md border border-black/10 dark:border-white/15 bg-transparent px-3 py-2"
-              min={INPUT_CONSTRAINTS.deposit.min}
-              step={INPUT_CONSTRAINTS.deposit.step}
-              value={Number.isFinite(deposit) ? deposit : 0}
-              onChange={e => setDeposit(parseFloat(e.target.value) || 0)}
-            />
-            <p className="mt-1 text-xs text-black/60 dark:text-white/60">
-              Loan amount: {formatCurrency(principal)}
-            </p>
+          <NumberFormField
+            label="Deposit"
+            id="deposit"
+            value={deposit}
+            onChange={setDeposit}
+            min={INPUT_CONSTRAINTS.deposit.min}
+            step={INPUT_CONSTRAINTS.deposit.step}
+            formatValue={formatInputNumber}
+            parseValue={parseInputNumber}
+            helpText="Amount you are contributing as deposit"
+          />
+
+          <div className="text-xs text-black/60 dark:text-white/60 p-3 bg-black/5 dark:bg-white/5 rounded-md">
+            <p>Loan amount: {formatCurrency(principal)}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm mb-1">Rate (%)</label>
-              <input
-                type="number"
-                className="w-full rounded-md border border-black/10 dark:border-white/15 bg-transparent px-3 py-2"
-                min={INPUT_CONSTRAINTS.rate.min}
-                max={INPUT_CONSTRAINTS.rate.max}
-                step={INPUT_CONSTRAINTS.rate.step}
-                value={Number.isFinite(rate) ? rate : 0}
-                onChange={e => setRate(parseFloat(e.target.value) || 0)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm mb-1">Term (years)</label>
-              <input
-                type="number"
-                className="w-full rounded-md border border-black/10 dark:border-white/15 bg-transparent px-3 py-2"
-                min={INPUT_CONSTRAINTS.termYears.min}
-                max={INPUT_CONSTRAINTS.termYears.max}
-                step={INPUT_CONSTRAINTS.termYears.step}
-                value={Number.isFinite(termYears) ? termYears : 0}
-                onChange={e => setTermYears(parseInt(e.target.value) || 0)}
-              />
-            </div>
+            <NumberFormField
+              label="Rate (%)"
+              id="rate"
+              value={rate}
+              onChange={setRate}
+              min={INPUT_CONSTRAINTS.rate.min}
+              max={INPUT_CONSTRAINTS.rate.max}
+              step={INPUT_CONSTRAINTS.rate.step}
+              helpText="Annual interest rate"
+            />
+            <NumberFormField
+              label="Term (years)"
+              id="term-years"
+              value={termYears}
+              onChange={setTermYears}
+              min={INPUT_CONSTRAINTS.termYears.min}
+              max={INPUT_CONSTRAINTS.termYears.max}
+              step={INPUT_CONSTRAINTS.termYears.step}
+              helpText="Length of the mortgage term"
+            />
           </div>
 
           <div>
@@ -153,10 +159,7 @@ export default function MortgageCalculatorPage() {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-lg border border-black/10 dark:border-white/15 p-4">
-            <h2 className="font-medium mb-2">
-              {FREQUENCY_LABEL[frequency]} repayment
-            </h2>
+          <ResultsCard title={`${FREQUENCY_LABEL[frequency]} repayment`}>
             <p className="text-3xl font-semibold">
               {formatCurrency(results.payment)}
             </p>
@@ -199,29 +202,52 @@ export default function MortgageCalculatorPage() {
             <p className="text-xs text-black/60 dark:text-white/60 mt-2">
               per {frequency === 'yearly' ? 'year' : frequency}
             </p>
-          </div>
+          </ResultsCard>
 
-          <div className="rounded-lg border border-black/10 dark:border-white/15 p-4">
-            <h3 className="font-medium mb-3">Totals over the loan</h3>
-            <dl className="grid grid-cols-2 gap-2 text-sm">
-              <dt className="text-black/70 dark:text-white/70">
-                Total payments
-              </dt>
-              <dd className="text-right">
-                {formatCurrency(results.totalPaid)}
-              </dd>
-              <dt className="text-black/70 dark:text-white/70">Principal</dt>
-              <dd className="text-right">
-                {formatCurrency(results.principal)}
-              </dd>
-              <dt className="text-black/70 dark:text-white/70">Interest</dt>
-              <dd className="text-right">{formatCurrency(results.interest)}</dd>
-              <dt className="text-black/70 dark:text-white/70">
-                Number of payments
-              </dt>
-              <dd className="text-right">{results.n.toLocaleString()}</dd>
-            </dl>
-          </div>
+          <ResultsCard
+            title={`Progress at ${selectedYear === 'deposit' ? 'deposit only' : selectedYear === 'first' ? 'start' : `year ${selectedYear}`}`}
+          >
+            <ResultsGrid
+              items={[
+                {
+                  label: 'Total interest paid',
+                  value: formatCurrency(results.totalInterestPaid),
+                },
+                {
+                  label: 'Principal gained',
+                  value: formatCurrency(results.principalGained),
+                },
+                {
+                  label: 'Equity',
+                  value: formatCurrency(deposit + results.principalGained),
+                },
+                {
+                  label: 'Remaining balance',
+                  value: formatCurrency(results.principal - results.principalGained),
+                },
+              ]}
+            />
+          </ResultsCard>
+
+          <ResultsCard title="Totals over the loan">
+            <ResultsGrid
+              items={[
+                {
+                  label: 'Total payments',
+                  value: formatCurrency(results.totalPaid),
+                },
+                {
+                  label: 'Principal',
+                  value: formatCurrency(results.principal),
+                },
+                { label: 'Interest', value: formatCurrency(results.interest) },
+                {
+                  label: 'Number of payments',
+                  value: results.n.toLocaleString(),
+                },
+              ]}
+            />
+          </ResultsCard>
 
           <p className="text-xs text-black/60 dark:text-white/60">
             Note: Uses a nominal annual rate divided by the selected frequency.

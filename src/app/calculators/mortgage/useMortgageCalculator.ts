@@ -55,28 +55,48 @@ export function useMortgageCalculator() {
     let paymentPrincipal: number = 0;
     let paymentInterest: number = 0;
 
-    if (selectedYear === 'first') {
+    // Calculate total interest paid and principal gained at the selected point in time
+    let totalInterestPaid: number = 0;
+    let principalGained: number = 0;
+
+    if (selectedYear === 'deposit') {
+      // Deposit only - no payments made yet
+      paymentPrincipal = 0;
+      paymentInterest = 0;
+      totalInterestPaid = 0;
+      principalGained = 0;
+    } else if (selectedYear === 'first') {
       // First payment
       const firstPaymentInterest: number = principal * r;
       paymentPrincipal = payment - firstPaymentInterest;
       paymentInterest = firstPaymentInterest;
+      totalInterestPaid = firstPaymentInterest;
+      principalGained = paymentPrincipal;
     } else {
       // Calculate for specific year
       const yearNumber: number = parseInt(selectedYear);
       if (yearNumber <= termYears) {
         const periodsToYear: number = yearNumber * periodsPerYear;
         let remainingBalance: number = principal;
+        let totalPrincipalPaid: number = 0;
+        let totalInterestPaid: number = 0;
 
-        // Calculate remaining balance after payments up to the selected year
+        // Calculate total principal and interest paid up to the selected year
         for (let i = 0; i < periodsToYear; i++) {
           const periodInterest: number = remainingBalance * r;
           const periodPrincipal: number = payment - periodInterest;
           remainingBalance -= periodPrincipal;
+          totalPrincipalPaid += periodPrincipal;
+          totalInterestPaid += periodInterest;
         }
 
         // Calculate the payment breakdown for the first payment of the selected year
         paymentInterest = remainingBalance * r;
         paymentPrincipal = payment - paymentInterest;
+
+        // Set the total values
+        principalGained = totalPrincipalPaid;
+        totalInterestPaid = totalInterestPaid;
       }
     }
 
@@ -89,6 +109,8 @@ export function useMortgageCalculator() {
       periodsPerYear,
       paymentPrincipal,
       paymentInterest,
+      totalInterestPaid,
+      principalGained,
     };
   }, [principal, frequency, rate, termYears, selectedYear]);
 
