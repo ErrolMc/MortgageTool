@@ -1,11 +1,17 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import {
   useBaseMortgageCalculator,
   PERIODS_PER_YEAR,
   formatCurrency,
   type Frequency,
   type YearOption,
+  type ValidationErrors,
 } from '@/hooks/useBaseMortgageCalculator';
+
+// Extend ValidationErrors for sale price
+interface MortgageValidationErrors extends ValidationErrors {
+  salePrice?: string;
+}
 
 // Re-export for convenience
 export { formatCurrency, type Frequency, type YearOption };
@@ -25,24 +31,39 @@ export function useMortgageCalculator() {
     selectedYear,
     setSelectedYear,
     principal,
-    validationErrors,
-    resetForm,
+    validationErrors: baseValidationErrors,
+    resetForm: baseResetForm,
     FREQUENCY_LABEL,
     YEAR_OPTIONS,
     INPUT_CONSTRAINTS,
   } = useBaseMortgageCalculator();
 
+  // Add sale price state
+  const [salePrice, setSalePrice] = useState<number>(0);
+
+  // Extended validation for sale price
+  const validationErrors: MortgageValidationErrors = {
+    ...baseValidationErrors,
+  };
+
+  if (salePrice < 0)
+    validationErrors.salePrice = 'Sale price cannot be negative';
+
   const results = useMemo(() => {
     const freq: Frequency = frequency;
     const periodsPerYear: number = PERIODS_PER_YEAR[freq];
-    const n: number = Math.max(1, Math.round((termYears || 0) * periodsPerYear));
+    const n: number = Math.max(
+      1,
+      Math.round((termYears || 0) * periodsPerYear)
+    );
     const annualRate: number = Math.max(0, rate) / 100;
     const r: number = annualRate / periodsPerYear; // nominal per-period rate
 
     let payment: number = 0;
     if (principal <= 0) {
       payment = 0;
-    } else if (Math.abs(r) < 1e-10) { // Use small epsilon for floating point comparison
+    } else if (Math.abs(r) < 1e-10) {
+      // Use small epsilon for floating point comparison
       payment = principal / n;
     } else {
       payment = (principal * r) / (1 - Math.pow(1 + r, -n));
@@ -100,6 +121,14 @@ export function useMortgageCalculator() {
       }
     }
 
+    // Calculate sale proceeds
+    const saleProceeds = salePrice || 0;
+    const remainingBalance = principal - principalGained;
+    const netProceeds = saleProceeds - remainingBalance;
+    const equity = deposit + principalGained;
+    const saleProfit = netProceeds - equity;
+    const saleProfitWithoutPrincipal = netProceeds - deposit;
+
     return {
       payment,
       totalPaid,
@@ -111,8 +140,19 @@ export function useMortgageCalculator() {
       paymentInterest,
       totalInterestPaid,
       principalGained,
+      remainingBalance,
+      saleProceeds,
+      netProceeds,
+      equity,
+      saleProfit,
+      saleProfitWithoutPrincipal,
     };
-  }, [principal, frequency, rate, termYears, selectedYear]);
+  }, [principal, frequency, rate, termYears, selectedYear, salePrice]);
+
+  const resetForm = () => {
+    baseResetForm();
+    setSalePrice(0);
+  };
 
   return {
     // State
@@ -120,6 +160,8 @@ export function useMortgageCalculator() {
     setPrice,
     deposit,
     setDeposit,
+    salePrice,
+    setSalePrice,
     rate,
     setRate,
     termYears,

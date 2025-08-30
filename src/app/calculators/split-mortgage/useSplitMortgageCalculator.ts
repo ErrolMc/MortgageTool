@@ -199,13 +199,13 @@ export function useSplitMortgageCalculator() {
 
     // Calculate sale proceeds distribution
     const saleProceeds = salePrice || 0;
-    
+
     // Calculate remaining mortgage balance at the selected year
     let remainingBalance = splitPrincipal;
     if (selectedYear !== 'deposit') {
       const yearNumber = selectedYear === 'first' ? 0 : parseInt(selectedYear);
       const periodsToYear = yearNumber * periodsPerYear;
-      
+
       // Calculate remaining balance after payments up to the selected year
       for (let i = 0; i < periodsToYear; i++) {
         const periodInterest = remainingBalance * r;
@@ -213,14 +213,30 @@ export function useSplitMortgageCalculator() {
         remainingBalance -= periodPrincipal;
       }
     }
-    
+
     // Calculate net proceeds after paying off remaining mortgage
     const netProceeds = saleProceeds - remainingBalance;
-    const person1SaleProceeds = totalEquity > 0 ? (person1Equity / totalEquity) * netProceeds : 0;
-    const person2SaleProceeds = totalEquity > 0 ? (person2Equity / totalEquity) * netProceeds : 0;
+    const person1SaleProceeds =
+      totalEquity > 0 ? (person1Equity / totalEquity) * netProceeds : 0;
+    const person2SaleProceeds =
+      totalEquity > 0 ? (person2Equity / totalEquity) * netProceeds : 0;
     const saleProfit = netProceeds - totalEquity;
-    const person1SaleProfit = totalEquity > 0 ? (person1Equity / totalEquity) * saleProfit : 0;
-    const person2SaleProfit = totalEquity > 0 ? (person2Equity / totalEquity) * saleProfit : 0;
+    const saleProfitWithoutPrincipal = netProceeds - totalDeposit;
+    const person1SaleProfit =
+      totalEquity > 0 ? (person1Equity / totalEquity) * saleProfit : 0;
+    const person2SaleProfit =
+      totalEquity > 0 ? (person2Equity / totalEquity) * saleProfit : 0;
+    
+    // Calculate profit from deposit - distribute the actual profit based on deposit ratios
+    // This represents how much of the profit each person gets based on their initial deposit contribution
+    const person1SaleProfitWithoutPrincipal =
+      totalDeposit > 0
+        ? (person1Deposit / totalDeposit) * saleProfit
+        : 0;
+    const person2SaleProfitWithoutPrincipal =
+      totalDeposit > 0
+        ? (person2Deposit / totalDeposit) * saleProfit
+        : 0;
 
     return {
       payment,
@@ -245,8 +261,11 @@ export function useSplitMortgageCalculator() {
       person1SaleProceeds,
       person2SaleProceeds,
       saleProfit,
+      saleProfitWithoutPrincipal,
       person1SaleProfit,
       person2SaleProfit,
+      person1SaleProfitWithoutPrincipal,
+      person2SaleProfitWithoutPrincipal,
     };
   }, [
     splitPrincipal,
@@ -258,6 +277,7 @@ export function useSplitMortgageCalculator() {
     person2Deposit,
     person1RepaymentShare,
     salePrice,
+    totalDeposit,
   ]);
 
   const resetForm = () => {

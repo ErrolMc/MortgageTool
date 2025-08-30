@@ -10,10 +10,7 @@ import {
   formatInputNumber,
   parseInputNumber,
 } from '@/hooks/useBaseMortgageCalculator';
-import {
-  ResultsCard,
-  ResultsGrid,
-} from '@/components/ui/ResultsCard';
+import { ResultsCard, ResultsGrid } from '@/components/ui/ResultsCard';
 import { NumberFormField } from '@/components/ui/FormField';
 import { usePresets, type MortgagePreset } from '@/hooks/usePresets';
 import { PresetManager } from '@/components/ui/PresetManager';
@@ -24,6 +21,8 @@ export default function MortgageCalculatorPage() {
     setPrice,
     deposit,
     setDeposit,
+    salePrice,
+    setSalePrice,
     rate,
     setRate,
     termYears,
@@ -34,6 +33,8 @@ export default function MortgageCalculatorPage() {
     setSelectedYear,
     principal,
     results,
+    validationErrors,
+    resetForm,
     FREQUENCY_LABEL,
     YEAR_OPTIONS,
     INPUT_CONSTRAINTS,
@@ -48,6 +49,7 @@ export default function MortgageCalculatorPage() {
     frequency,
     selectedYear,
     deposit,
+    salePrice,
   };
 
   const handleLoadPreset = (preset: MortgagePreset) => {
@@ -57,6 +59,8 @@ export default function MortgageCalculatorPage() {
     setFrequency(preset.data.frequency);
     setSelectedYear(preset.data.selectedYear);
     if (preset.data.deposit !== undefined) setDeposit(preset.data.deposit);
+    if (preset.data.salePrice !== undefined)
+      setSalePrice(preset.data.salePrice);
   };
 
   return (
@@ -219,11 +223,11 @@ export default function MortgageCalculatorPage() {
                 },
                 {
                   label: 'Equity',
-                  value: formatCurrency(deposit + results.principalGained),
+                  value: formatCurrency(results.equity),
                 },
                 {
                   label: 'Remaining balance',
-                  value: formatCurrency(results.principal - results.principalGained),
+                  value: formatCurrency(results.remainingBalance),
                 },
               ]}
             />
@@ -254,6 +258,69 @@ export default function MortgageCalculatorPage() {
             Actual lender calculations may differ slightly. This is for
             estimation only.
           </p>
+        </div>
+      </div>
+
+      {/* Sale Price Calculator Section */}
+      <div className="border-t-2 border-black/20 dark:border-white/20 pt-8 mt-8">
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div className="space-y-4">
+            <h2 className="text-lg font-medium">Sale Price Calculator</h2>
+            <NumberFormField
+              label="Sale price"
+              id="sale-price"
+              value={salePrice}
+              onChange={setSalePrice}
+              error={validationErrors.salePrice}
+              min={0}
+              step={1000}
+              formatValue={formatInputNumber}
+              parseValue={parseInputNumber}
+              helpText="Enter the sale price to calculate proceeds"
+            />
+          </div>
+
+          <div className="space-y-4">
+            {salePrice > 0 && (
+              <ResultsCard title="Sale Proceeds">
+                <ResultsGrid
+                  items={[
+                    {
+                      label: 'Sale price',
+                      value: formatCurrency(results.saleProceeds),
+                    },
+                    {
+                      label: 'Remaining mortgage',
+                      value: formatCurrency(results.remainingBalance),
+                    },
+                    {
+                      label: 'Net proceeds',
+                      value: formatCurrency(results.netProceeds),
+                    },
+                    {
+                      label: 'Equity',
+                      value: formatCurrency(results.equity),
+                    },
+                  ]}
+                />
+
+                <div className="border-t border-black/10 dark:border-white/15 my-4" />
+
+                <ResultsGrid
+                  items={[
+                    {
+                      label: 'Profit (from equity)',
+                      value: formatCurrency(results.saleProfit),
+                    },
+                    {
+                      label: 'Profit (from deposit)',
+                      value: formatCurrency(results.saleProfitWithoutPrincipal),
+                    },
+                  ]}
+                />
+              </ResultsCard>
+            )}
+          </div>
         </div>
       </div>
     </div>
