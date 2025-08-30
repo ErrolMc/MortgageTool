@@ -14,6 +14,8 @@ import {
   ResultsGrid,
   ResultsRow,
 } from '@/components/ui/ResultsCard';
+import { usePresets, type MortgagePreset } from '@/hooks/usePresets';
+import { PresetManager } from '@/components/ui/PresetManager';
 
 export default function SplitMortgageCalculatorPage() {
   const {
@@ -43,10 +45,34 @@ export default function SplitMortgageCalculatorPage() {
     INPUT_CONSTRAINTS,
   } = useSplitMortgageCalculator();
 
+  const { presets, savePreset, deletePreset } = usePresets();
+
   const person1RepaymentSharePercent = person1RepaymentShare * 100;
   const person2RepaymentSharePercent = (1 - person1RepaymentShare) * 100;
 
   const hasErrors = Object.keys(validationErrors).length > 0;
+
+  const currentData = {
+    price,
+    rate,
+    termYears,
+    frequency,
+    selectedYear,
+    person1Deposit,
+    person2Deposit,
+    person1RepaymentShare,
+  };
+
+  const handleLoadPreset = (preset: MortgagePreset) => {
+    setPrice(preset.data.price);
+    setRate(preset.data.rate);
+    setTermYears(preset.data.termYears);
+    setFrequency(preset.data.frequency);
+    setSelectedYear(preset.data.selectedYear);
+    if (preset.data.person1Deposit !== undefined) setPerson1Deposit(preset.data.person1Deposit);
+    if (preset.data.person2Deposit !== undefined) setPerson2Deposit(preset.data.person2Deposit);
+    if (preset.data.person1RepaymentShare !== undefined) setPerson1RepaymentShare(preset.data.person1RepaymentShare);
+  };
 
   return (
     <div className="space-y-8">
@@ -176,8 +202,19 @@ export default function SplitMortgageCalculatorPage() {
             />
           </div>
 
-          <FrequencySelector value={frequency} onChange={setFrequency} />
-        </div>
+                     <FrequencySelector value={frequency} onChange={setFrequency} />
+
+           <div className="border-t border-black/10 dark:border-white/15 pt-4">
+                           <PresetManager
+                presets={presets}
+                onSavePreset={savePreset}
+                onLoadPreset={handleLoadPreset}
+                onDeletePreset={deletePreset}
+                currentData={currentData}
+                type="split"
+              />
+           </div>
+         </div>
 
         <div className="space-y-4">
           {hasErrors && (

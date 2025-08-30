@@ -6,6 +6,8 @@ import {
   type Frequency,
   type YearOption,
 } from './useMortgageCalculator';
+import { usePresets, type MortgagePreset } from '@/hooks/usePresets';
+import { PresetManager } from '@/components/ui/PresetManager';
 
 export default function MortgageCalculatorPage() {
   const {
@@ -27,6 +29,26 @@ export default function MortgageCalculatorPage() {
     YEAR_OPTIONS,
     INPUT_CONSTRAINTS,
   } = useMortgageCalculator();
+
+  const { presets, savePreset, deletePreset } = usePresets();
+
+  const currentData = {
+    price,
+    rate,
+    termYears,
+    frequency,
+    selectedYear,
+    deposit,
+  };
+
+  const handleLoadPreset = (preset: MortgagePreset) => {
+    setPrice(preset.data.price);
+    setRate(preset.data.rate);
+    setTermYears(preset.data.termYears);
+    setFrequency(preset.data.frequency);
+    setSelectedYear(preset.data.selectedYear);
+    if (preset.data.deposit !== undefined) setDeposit(preset.data.deposit);
+  };
 
   return (
     <div className="space-y-8">
@@ -116,6 +138,17 @@ export default function MortgageCalculatorPage() {
                 </button>
               ))}
             </div>
+          </div>
+
+          <div className="border-t border-black/10 dark:border-white/15 pt-4">
+            <PresetManager
+              presets={presets}
+              onSavePreset={savePreset}
+              onLoadPreset={handleLoadPreset}
+              onDeletePreset={deletePreset}
+              currentData={currentData}
+              type="regular"
+            />
           </div>
         </div>
 
