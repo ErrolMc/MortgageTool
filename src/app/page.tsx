@@ -2,7 +2,9 @@ export default function Home() {
   return (
     <div className="space-y-8">
       <section className="space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Mortgage Calculators</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">
+          Mortgage Calculators
+        </h1>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2">
@@ -17,10 +19,11 @@ export default function Home() {
         </a>
         <div className="block rounded-lg border border-black/10 dark:border-white/10 p-4 opacity-70">
           <h2 className="font-medium">Extra Repayments</h2>
-          <p className="text-sm text-black/70 dark:text-white/70">Coming soon</p>
+          <p className="text-sm text-black/70 dark:text-white/70">
+            Coming soon
+          </p>
         </div>
       </section>
     </div>
   );
 }
-
