@@ -27,6 +27,10 @@ export default function SplitMortgageCalculatorPage() {
     setPerson2Deposit,
     person1RepaymentShare,
     setPerson1RepaymentShare,
+    person1VoluntaryRepayment,
+    setPerson1VoluntaryRepayment,
+    person2VoluntaryRepayment,
+    setPerson2VoluntaryRepayment,
     salePrice,
     setSalePrice,
     rate,
@@ -246,6 +250,39 @@ export default function SplitMortgageCalculatorPage() {
               <p>Person 1: {formatCurrency(results.person1Payment)}</p>
               <p>Person 2: {formatCurrency(results.person2Payment)}</p>
             </div>
+
+            {(person1VoluntaryRepayment > 0 ||
+              person2VoluntaryRepayment > 0) && (
+              <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md">
+                <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
+                  Including voluntary repayments:
+                </p>
+                <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                  <p>
+                    Total per period:{' '}
+                    {formatCurrency(results.totalPaymentWithVoluntary)}
+                  </p>
+                  <p>
+                    Person 1: {formatCurrency(results.person1TotalPayment)}{' '}
+                    (Principal:{' '}
+                    {formatCurrency(
+                      results.paymentPrincipal * person1RepaymentShare +
+                        person1VoluntaryRepayment
+                    )}
+                    )
+                  </p>
+                  <p>
+                    Person 2: {formatCurrency(results.person2TotalPayment)}{' '}
+                    (Principal:{' '}
+                    {formatCurrency(
+                      results.paymentPrincipal * (1 - person1RepaymentShare) +
+                        person2VoluntaryRepayment
+                    )}
+                    )
+                  </p>
+                </div>
+              </div>
+            )}
 
             <div className="mt-3">
               <label className="block text-sm mb-2">

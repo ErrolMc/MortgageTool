@@ -5,59 +5,11 @@ import {
   DEFAULT_RATE,
   DEFAULT_TERM_YEARS,
   DEFAULT_FREQUENCY,
-  DEFAULT_SELECTED_YEAR,
+  DEFAULT_AGE_OF_MORTGAGE,
 } from '@/constants/mortgage';
+import { Frequency, AgeOfMortgage } from '@/calculations/mortgageTypes';
+import { FREQUENCY_LABEL, YEAR_OPTIONS, INPUT_CONSTRAINTS } from '@/calculations/utilityMethods';
 
-export type Frequency = 'yearly' | 'monthly' | 'fortnightly' | 'weekly';
-export type YearOption = 'deposit' | 'first' | '5' | '10' | '15' | '20' | '25' | '27' | '29' | '30';
-
-export const FREQUENCY_LABEL: Record<Frequency, string> = {
-  yearly: 'Yearly',
-  monthly: 'Monthly',
-  fortnightly: 'Fortnightly',
-  weekly: 'Weekly',
-};
-
-export const PERIODS_PER_YEAR: Record<Frequency, number> = {
-  yearly: 1,
-  monthly: 12,
-  fortnightly: 26,
-  weekly: 52,
-};
-
-export const YEAR_OPTIONS: { value: YearOption; label: string }[] = [
-  { value: 'deposit', label: 'Deposit only' },
-  { value: 'first', label: 'First payment' },
-  { value: '5', label: 'Year 5' },
-  { value: '10', label: 'Year 10' },
-  { value: '15', label: 'Year 15' },
-  { value: '20', label: 'Year 20' },
-  { value: '25', label: 'Year 25' },
-  { value: '27', label: 'Year 27' },
-  { value: '29', label: 'Year 29' },
-  { value: '30', label: 'Year 30' },
-];
-
-export const INPUT_CONSTRAINTS = {
-  rate: {
-    min: 0,
-    max: 99,
-    step: 0.01,
-  },
-  termYears: {
-    min: 1,
-    max: 40,
-    step: 1,
-  },
-  housePrice: {
-    min: 0,
-    step: 1000,
-  },
-  deposit: {
-    min: 0,
-    step: 1000,
-  },
-} as const;
 
 export function formatNumber(n: number): string {
   return n.toLocaleString(undefined, {
@@ -88,15 +40,13 @@ export interface ValidationErrors {
   person1RepaymentShare?: string;
 }
 
-export function useBaseMortgageCalculator() {
+export function useBaseMortgageInputForm() {
   const [price, setPrice] = useState<number>(DEFAULT_HOUSE_PRICE);
   const [deposit, setDeposit] = useState<number>(DEFAULT_DEPOSIT);
   const [rate, setRate] = useState<number>(DEFAULT_RATE);
   const [termYears, setTermYears] = useState<number>(DEFAULT_TERM_YEARS);
   const [frequency, setFrequency] = useState<Frequency>(DEFAULT_FREQUENCY);
-  const [selectedYear, setSelectedYear] = useState<YearOption>(DEFAULT_SELECTED_YEAR);
-
-  const principal: number = Math.max(0, (price || 0) - (deposit || 0));
+  const [ageOfMortgage, setAgeOfMortgage] = useState<AgeOfMortgage>(DEFAULT_AGE_OF_MORTGAGE);
 
   const validationErrors: ValidationErrors = {};
 
@@ -115,7 +65,7 @@ export function useBaseMortgageCalculator() {
     setRate(DEFAULT_RATE);
     setTermYears(DEFAULT_TERM_YEARS);
     setFrequency(DEFAULT_FREQUENCY);
-    setSelectedYear(DEFAULT_SELECTED_YEAR);
+    setAgeOfMortgage(DEFAULT_AGE_OF_MORTGAGE);
   };
 
   return {
@@ -130,11 +80,10 @@ export function useBaseMortgageCalculator() {
     setTermYears,
     frequency,
     setFrequency,
-    selectedYear,
-    setSelectedYear,
+    ageOfMortgage,
+    setAgeOfMortgage,
 
-    // Computed values
-    principal,
+    // Errors
     validationErrors,
 
     // Actions

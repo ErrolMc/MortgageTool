@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Frequency, AgeOfMortgage } from '@/calculations/mortgageTypes';
 
 export interface MortgagePreset {
   id: string;
@@ -10,8 +11,8 @@ export interface MortgagePreset {
     price: number;
     rate: number;
     termYears: number;
-    frequency: 'yearly' | 'monthly' | 'fortnightly' | 'weekly';
-    selectedYear: 'deposit' | 'first' | '5' | '10' | '15' | '20' | '25' | '27' | '29' | '30';
+    frequency: Frequency;
+    ageOfMortgage: AgeOfMortgage;
     
     // Regular mortgage data
     deposit?: number;

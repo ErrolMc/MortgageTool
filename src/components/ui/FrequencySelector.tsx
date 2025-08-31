@@ -1,5 +1,6 @@
 import React from 'react';
-import { type Frequency, FREQUENCY_LABEL } from '@/hooks/useBaseMortgageCalculator';
+import { Frequency } from '@/calculations/mortgageTypes';
+import { FREQUENCY_LABEL } from '@/calculations/utilityMethods';
 
 interface FrequencySelectorProps {
   value: Frequency;

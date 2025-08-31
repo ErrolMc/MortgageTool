@@ -1,12 +1,11 @@
 import { useMemo, useState } from 'react';
 import {
-  useBaseMortgageCalculator,
-  PERIODS_PER_YEAR,
+  useBaseMortgageInputForm,
   formatCurrency,
-  type Frequency,
-  type YearOption,
   type ValidationErrors,
 } from '@/hooks/useBaseMortgageCalculator';
+import { Frequency, AgeOfMortgage, MortgageResults } from '@/calculations/mortgageTypes';
+import { PERIODS_PER_YEAR } from '@/calculations/utilityMethods';
 
 // Extend ValidationErrors for sale price
 interface MortgageValidationErrors extends ValidationErrors {
@@ -14,7 +13,7 @@ interface MortgageValidationErrors extends ValidationErrors {
 }
 
 // Re-export for convenience
-export { formatCurrency, type Frequency, type YearOption };
+export { formatCurrency, type Frequency, type AgeOfMortgage as YearOption };
 
 export function useMortgageCalculator() {
   const {
@@ -28,15 +27,16 @@ export function useMortgageCalculator() {
     setTermYears,
     frequency,
     setFrequency,
-    selectedYear,
-    setSelectedYear,
-    principal,
+    ageOfMortgage,
+    setAgeOfMortgage,
     validationErrors: baseValidationErrors,
     resetForm: baseResetForm,
     FREQUENCY_LABEL,
     YEAR_OPTIONS,
     INPUT_CONSTRAINTS,
-  } = useBaseMortgageCalculator();
+  } = useBaseMortgageInputForm();
+
+  const loanAmount: number = Math.max(0, (price || 0) - (deposit || 0));
 
   // Add sale price state
   const [salePrice, setSalePrice] = useState<number>(0);
@@ -60,17 +60,17 @@ export function useMortgageCalculator() {
     const r: number = annualRate / periodsPerYear; // nominal per-period rate
 
     let payment: number = 0;
-    if (principal <= 0) {
+    if (loanAmount <= 0) {
       payment = 0;
     } else if (Math.abs(r) < 1e-10) {
       // Use small epsilon for floating point comparison
-      payment = principal / n;
+      payment = loanAmount / n;
     } else {
-      payment = (principal * r) / (1 - Math.pow(1 + r, -n));
+      payment = (loanAmount * r) / (1 - Math.pow(1 + r, -n));
     }
 
     const totalPaid: number = payment * n;
-    const interest: number = Math.max(0, totalPaid - principal);
+    const interest: number = Math.max(0, totalPaid - loanAmount);
 
     // Calculate principal and interest portions for the selected year
     let paymentPrincipal: number = 0;
@@ -80,25 +80,25 @@ export function useMortgageCalculator() {
     let totalInterestPaid: number = 0;
     let principalGained: number = 0;
 
-    if (selectedYear === 'deposit') {
+    if (ageOfMortgage === 'deposit') {
       // Deposit only - no payments made yet
       paymentPrincipal = 0;
       paymentInterest = 0;
       totalInterestPaid = 0;
       principalGained = 0;
-    } else if (selectedYear === 'first') {
+    } else if (ageOfMortgage === 'first') {
       // First payment
-      const firstPaymentInterest: number = principal * r;
+      const firstPaymentInterest: number = loanAmount * r;
       paymentPrincipal = payment - firstPaymentInterest;
       paymentInterest = firstPaymentInterest;
       totalInterestPaid = firstPaymentInterest;
       principalGained = paymentPrincipal;
     } else {
       // Calculate for specific year
-      const yearNumber: number = parseInt(selectedYear);
+      const yearNumber: number = parseInt(ageOfMortgage);
       if (yearNumber <= termYears) {
         const periodsToYear: number = yearNumber * periodsPerYear;
-        let remainingBalance: number = principal;
+        let remainingBalance: number = loanAmount;
         let totalPrincipalPaid: number = 0;
         let totalInterestPaid: number = 0;
 
@@ -123,7 +123,7 @@ export function useMortgageCalculator() {
 
     // Calculate sale proceeds
     const saleProceeds = salePrice || 0;
-    const remainingBalance = principal - principalGained;
+    const remainingBalance = loanAmount - principalGained;
     const netProceeds = saleProceeds - remainingBalance;
     const equity = deposit + principalGained;
     const saleProfit = netProceeds - equity;
@@ -132,7 +132,7 @@ export function useMortgageCalculator() {
     return {
       payment,
       totalPaid,
-      principal,
+      loanAmount,
       interest,
       n,
       periodsPerYear,
@@ -147,7 +147,7 @@ export function useMortgageCalculator() {
       saleProfit,
       saleProfitWithoutPrincipal,
     };
-  }, [principal, frequency, rate, termYears, selectedYear, salePrice]);
+  }, [deposit, loanAmount, frequency, rate, termYears, ageOfMortgage, salePrice]);
 
   const resetForm = () => {
     baseResetForm();
@@ -168,11 +168,11 @@ export function useMortgageCalculator() {
     setTermYears,
     frequency,
     setFrequency,
-    selectedYear,
-    setSelectedYear,
+    ageOfMortgage,
+    setAgeOfMortgage,
 
     // Computed values
-    principal,
+    loanAmount,
     results,
     validationErrors,
 
