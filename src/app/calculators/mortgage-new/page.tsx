@@ -221,7 +221,7 @@ export default function MortgageCalculatorPage() {
                 },
                 {
                   label: 'Equity',
-                  value: formatCurrency(results.equity),
+                  value: formatCurrency(results.totalEquityAtAgeOfMortgage),
                 },
                 {
                   label: 'Remaining balance',
@@ -285,7 +285,7 @@ export default function MortgageCalculatorPage() {
                   items={[
                     {
                       label: 'Sale price',
-                      value: formatCurrency(results.saleProceeds),
+                      value: formatCurrency(salePrice),
                     },
                     {
                       label: 'Remaining mortgage',
@@ -294,25 +294,6 @@ export default function MortgageCalculatorPage() {
                     {
                       label: 'Net proceeds',
                       value: formatCurrency(results.netProceeds),
-                    },
-                    {
-                      label: 'Equity',
-                      value: formatCurrency(results.equity),
-                    },
-                  ]}
-                />
-
-                <div className="border-t border-black/10 dark:border-white/15 my-4" />
-
-                <ResultsGrid
-                  items={[
-                    {
-                      label: 'Profit (from equity)',
-                      value: formatCurrency(results.saleProfit),
-                    },
-                    {
-                      label: 'Profit (from deposit)',
-                      value: formatCurrency(results.saleProfitWithoutPrincipal),
                     },
                   ]}
                 />

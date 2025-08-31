@@ -5,12 +5,8 @@ import {
   type ValidationErrors,
 } from '@/hooks/useBaseMortgageCalculator';
 import { calculateMortgage } from '@/calculations/mortgageCalculations';
-import {
-  type MortgageInputs,
-  Frequency,
-  AgeOfMortgage,
-  type MortgageResults,
-} from '@/calculations/mortgageTypes';
+import { type MortgageInputs, Frequency, AgeOfMortgage, type MortgageResults } from '@/calculations/mortgageTypes';
+
 
 // Extend ValidationErrors for sale price
 interface MortgageValidationErrors extends ValidationErrors {
@@ -18,7 +14,7 @@ interface MortgageValidationErrors extends ValidationErrors {
 }
 
 // Re-export for convenience
-export { formatCurrency, type Frequency, type AgeOfMortgage };
+export { formatCurrency, type Frequency, type AgeOfMortgage as YearOption };
 
 export function useMortgageCalculator() {
   const {

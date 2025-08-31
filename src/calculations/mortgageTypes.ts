@@ -22,16 +22,13 @@ export interface MortgageResults {
   interestFromOnePaymentAtAgeOfMortgage: number;
 
   // Progress calculations
+  totalEquityAtAgeOfMortgage: number;
   totalInterestPaidUpToAgeOfMortgage: number;
   totalPrincipalGainedFromPaymentsUpToAgeOfMortgage: number;
   remainingBalance: number;
 
   // Sale calculations
-  saleProceeds: number;
-  netProceeds: number;
-  equity: number;
-  saleProfit: number;
-  saleProfitWithoutPrincipal: number;
+  netProceeds: number; // this is the take home after covering the remaining mortgage
 }
 
 export type Frequency = 'yearly' | 'monthly' | 'fortnightly' | 'weekly';
