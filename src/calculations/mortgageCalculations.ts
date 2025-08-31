@@ -61,13 +61,13 @@ export function calculateBasePayment(
 // Calculate progress up to a specific year
 export function calculateProgressToYear(
   loanAmount: number,
-  payment: number,
-  r: number,
+  paymentForPeriod: number,
+  periodRate: number,
   periodsPerYear: number,
   ageOfMortgage: AgeOfMortgage
 ) {
-  const firstPaymentInterest = loanAmount * r;
-  let principalFromOnePaymentAtAgeOfMortgage = payment - firstPaymentInterest;
+  const firstPaymentInterest = loanAmount * periodRate;
+  let principalFromOnePaymentAtAgeOfMortgage = paymentForPeriod - firstPaymentInterest;
 
   let interestFromOnePaymentAtAgeOfMortgage = 0;
   let totalInterestPaidUpToAgeOfMortgage = 0;
@@ -75,12 +75,11 @@ export function calculateProgressToYear(
 
   if (ageOfMortgage === 'deposit') {
     // Deposit only - no payments made yet
-    interestFromOnePaymentAtAgeOfMortgage = 0;
     totalInterestPaidUpToAgeOfMortgage = 0;
     totalPrincipalGainedFromPaymentsUpToAgeOfMortgage = 0;
+    interestFromOnePaymentAtAgeOfMortgage = firstPaymentInterest;
   } else if (ageOfMortgage === 'first') {
     // First payment
-
     interestFromOnePaymentAtAgeOfMortgage = firstPaymentInterest;
     totalInterestPaidUpToAgeOfMortgage = firstPaymentInterest;
     totalPrincipalGainedFromPaymentsUpToAgeOfMortgage = principalFromOnePaymentAtAgeOfMortgage;
@@ -93,16 +92,16 @@ export function calculateProgressToYear(
 
     // Calculate total principal and interest paid up to the selected year
     for (let i = 0; i < periodsToYear; i++) {
-      const periodInterest = remainingBalance * r;
-      const periodPrincipal = payment - periodInterest;
+      const periodInterest = remainingBalance * periodRate;
+      const periodPrincipal = paymentForPeriod - periodInterest;
       remainingBalance -= periodPrincipal;
       totalPrincipalPaid += periodPrincipal;
       totalInterestPaidUpToAgeOfMortgage += periodInterest;
     }
 
     // Calculate the payment breakdown for the first payment of the selected year
-    interestFromOnePaymentAtAgeOfMortgage = remainingBalance * r;
-    principalFromOnePaymentAtAgeOfMortgage = payment - interestFromOnePaymentAtAgeOfMortgage;
+    interestFromOnePaymentAtAgeOfMortgage = remainingBalance * periodRate;
+    principalFromOnePaymentAtAgeOfMortgage = paymentForPeriod - interestFromOnePaymentAtAgeOfMortgage;
 
     // Set the total values
     totalPrincipalGainedFromPaymentsUpToAgeOfMortgage = totalPrincipalPaid;
