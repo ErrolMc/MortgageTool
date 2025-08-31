@@ -212,11 +212,11 @@ export default function MortgageCalculatorPage() {
             <ResultsGrid
               items={[
                 {
-                  label: 'Interest paid so far',
+                  label: 'Interest paid to date',
                   value: formatCurrency(results.totalInterestPaidUpToAgeOfMortgage),
                 },
                 {
-                  label: 'Principal gained',
+                  label: 'Principal gained from payments to date',
                   value: formatCurrency(results.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage),
                 },
                 {

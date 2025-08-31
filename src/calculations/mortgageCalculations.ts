@@ -62,10 +62,11 @@ export function calculateBasePayment(
 export function calculateProgressToYear(
   loanAmount: number,
   paymentForPeriod: number,
-  periodRate: number,
+  rate: number,
   periodsPerYear: number,
   ageOfMortgage: AgeOfMortgage
 ) {
+  const periodRate = calculatePerPeriodRate(rate, periodsPerYear);
   const firstPaymentInterest = loanAmount * periodRate;
   let principalFromOnePaymentAtAgeOfMortgage = paymentForPeriod - firstPaymentInterest;
 
@@ -162,7 +163,7 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResults {
   } = calculateProgressToYear(
     loanAmount,
     paymentForPeriod,
-    periodRate,
+    inputs.rate,
     periodsPerYear,
     inputs.ageOfMortgage
   );
