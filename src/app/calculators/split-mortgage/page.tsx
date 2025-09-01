@@ -5,7 +5,6 @@ import {
   formatCurrency,
   formatInputNumber,
   parseInputNumber,
-  type YearOption,
 } from './useSplitMortgageCalculator';
 import { NumberFormField } from '@/components/ui/FormField';
 import { FrequencySelector } from '@/components/ui/FrequencySelector';
@@ -16,6 +15,7 @@ import {
 } from '@/components/ui/ResultsCard';
 import { usePresets, type MortgagePreset } from '@/hooks/usePresets';
 import { PresetManager } from '@/components/ui/PresetManager';
+import { AgeOfMortgage } from '@/calculations/mortgageTypes';
 
 export default function SplitMortgageCalculatorPage() {
   const {
@@ -39,8 +39,8 @@ export default function SplitMortgageCalculatorPage() {
     setTermYears,
     frequency,
     setFrequency,
-    selectedYear,
-    setSelectedYear,
+    ageOfMortgage,
+    setAgeOfMortgage,
     principal,
     totalDeposit,
     results,
@@ -63,7 +63,7 @@ export default function SplitMortgageCalculatorPage() {
     rate,
     termYears,
     frequency,
-    selectedYear,
+    ageOfMortgage,
     person1Deposit,
     person2Deposit,
     person1RepaymentShare,
@@ -75,7 +75,7 @@ export default function SplitMortgageCalculatorPage() {
     setRate(preset.data.rate);
     setTermYears(preset.data.termYears);
     setFrequency(preset.data.frequency);
-    setSelectedYear(preset.data.selectedYear);
+    setAgeOfMortgage(preset.data.ageOfMortgage);
     if (preset.data.person1Deposit !== undefined)
       setPerson1Deposit(preset.data.person1Deposit);
     if (preset.data.person2Deposit !== undefined)
@@ -289,8 +289,8 @@ export default function SplitMortgageCalculatorPage() {
                 Payment breakdown for:
               </label>
               <select
-                value={selectedYear}
-                onChange={e => setSelectedYear(e.target.value as YearOption)}
+                value={ageOfMortgage}
+                onChange={e => setAgeOfMortgage(e.target.value as AgeOfMortgage)}
                 className="w-full rounded-md border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 px-3 py-2 text-sm text-black dark:text-white [&>option]:bg-black/5 [&>option]:dark:bg-white/5 [&>option]:text-black [&>option]:dark:text-white"
                 style={{
                   backgroundColor: 'var(--background)',
@@ -325,7 +325,7 @@ export default function SplitMortgageCalculatorPage() {
           </ResultsCard>
 
           <ResultsCard
-            title={`Equity split at ${selectedYear === 'deposit' ? 'deposit only' : selectedYear === 'first' ? 'start' : `year ${selectedYear}`}`}
+            title={`Equity split at ${ageOfMortgage === 'deposit' ? 'deposit only' : ageOfMortgage === 'first' ? 'start' : `year ${ageOfMortgage}`}`}
           >
             <ResultsGrid
               items={[

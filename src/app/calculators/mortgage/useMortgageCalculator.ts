@@ -4,7 +4,7 @@ import {
   formatCurrency,
   type ValidationErrors,
 } from '@/hooks/useBaseMortgageCalculator';
-import { Frequency, AgeOfMortgage, MortgageResults } from '@/calculations/mortgageTypes';
+import { Frequency, AgeOfMortgage } from '@/calculations/mortgageTypes';
 import { PERIODS_PER_YEAR } from '@/calculations/utilityMethods';
 
 // Extend ValidationErrors for sale price
