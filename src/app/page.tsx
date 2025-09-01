@@ -18,15 +18,6 @@ export default function Home() {
           </p>
         </a>
         <a
-          href="/calculators/mortgage-new"
-          className="block rounded-lg border border-black/10 dark:border-white/10 p-4 hover:bg-black/[.03] dark:hover:bg-white/[.03] transition"
-        >
-          <h2 className="font-medium">Enhanced Mortgage Calculator</h2>
-          <p className="text-sm text-black/70 dark:text-white/70">
-            Advanced calculator with sale price analysis and detailed breakdowns.
-          </p>
-        </a>
-        <a
           href="/calculators/split-mortgage"
           className="block rounded-lg border border-black/10 dark:border-white/10 p-4 hover:bg-black/[.03] dark:hover:bg-white/[.03] transition"
         >

@@ -1,6 +1,10 @@
 'use client';
 
-import { useMortgageCalculator, formatCurrency } from './useMortgageCalculator';
+import {
+  useMortgageCalculator,
+  formatCurrency,
+} from './useMortgageCalculator';
+import { type Frequency, type AgeOfMortgage } from '@/calculations/mortgageTypes';
 import {
   formatInputNumber,
   parseInputNumber,
@@ -9,8 +13,6 @@ import { ResultsCard, ResultsGrid } from '@/components/ui/ResultsCard';
 import { NumberFormField } from '@/components/ui/FormField';
 import { usePresets, type MortgagePreset } from '@/hooks/usePresets';
 import { PresetManager } from '@/components/ui/PresetManager';
-import { Frequency, AgeOfMortgage } from '@/calculations/mortgageTypes';
-import { FREQUENCY_LABEL } from '@/calculations/utilityMethods';
 
 export default function MortgageCalculatorPage() {
   const {
@@ -28,7 +30,6 @@ export default function MortgageCalculatorPage() {
     setFrequency,
     ageOfMortgage,
     setAgeOfMortgage,
-    loanAmount,
     results,
     validationErrors,
     resetForm,
@@ -98,7 +99,7 @@ export default function MortgageCalculatorPage() {
           />
 
           <div className="text-xs text-black/60 dark:text-white/60 p-3 bg-black/5 dark:bg-white/5 rounded-md">
-            <p>Loan amount: {formatCurrency(loanAmount)}</p>
+            <p>Loan amount: {formatCurrency(results.loanAmount)}</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -162,7 +163,7 @@ export default function MortgageCalculatorPage() {
         <div className="space-y-4">
           <ResultsCard title={`${FREQUENCY_LABEL[frequency]} repayment`}>
             <p className="text-3xl font-semibold">
-              {formatCurrency(results.payment)}
+              {formatCurrency(results.paymentForPeriod)}
             </p>
 
             <div className="mt-3">
@@ -191,13 +192,13 @@ export default function MortgageCalculatorPage() {
                 <span className="text-black/70 dark:text-white/70">
                   Principal{' '}
                 </span>
-                <span>{formatCurrency(results.paymentPrincipal)}</span>
+                <span>{formatCurrency(results.principalFromOnePaymentAtAgeOfMortgage)}</span>
               </div>
               <div className="text-sm">
                 <span className="text-black/70 dark:text-white/70">
                   Interest{' '}
                 </span>
-                <span>{formatCurrency(results.paymentInterest)}</span>
+                <span>{formatCurrency(results.interestFromOnePaymentAtAgeOfMortgage)}</span>
               </div>
             </div>
             <p className="text-xs text-black/60 dark:text-white/60 mt-2">
@@ -211,16 +212,16 @@ export default function MortgageCalculatorPage() {
             <ResultsGrid
               items={[
                 {
-                  label: 'Total interest paid',
-                  value: formatCurrency(results.totalInterestPaid),
+                  label: 'Interest paid to date',
+                  value: formatCurrency(results.totalInterestPaidUpToAgeOfMortgage),
                 },
                 {
-                  label: 'Principal gained',
-                  value: formatCurrency(results.principalGained),
+                  label: 'Principal gained from payments to date',
+                  value: formatCurrency(results.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage),
                 },
                 {
                   label: 'Equity',
-                  value: formatCurrency(results.equity),
+                  value: formatCurrency(results.totalEquityAtAgeOfMortgage),
                 },
                 {
                   label: 'Remaining balance',
@@ -241,10 +242,10 @@ export default function MortgageCalculatorPage() {
                   label: 'Principal',
                   value: formatCurrency(results.loanAmount),
                 },
-                { label: 'Interest', value: formatCurrency(results.interest) },
+                { label: 'Interest', value: formatCurrency(results.totalInterest) },
                 {
                   label: 'Number of payments',
-                  value: results.n.toLocaleString(),
+                  value: results.totalPeriods.toLocaleString(),
                 },
               ]}
             />
@@ -284,7 +285,7 @@ export default function MortgageCalculatorPage() {
                   items={[
                     {
                       label: 'Sale price',
-                      value: formatCurrency(results.saleProceeds),
+                      value: formatCurrency(salePrice),
                     },
                     {
                       label: 'Remaining mortgage',
@@ -293,25 +294,6 @@ export default function MortgageCalculatorPage() {
                     {
                       label: 'Net proceeds',
                       value: formatCurrency(results.netProceeds),
-                    },
-                    {
-                      label: 'Equity',
-                      value: formatCurrency(results.equity),
-                    },
-                  ]}
-                />
-
-                <div className="border-t border-black/10 dark:border-white/15 my-4" />
-
-                <ResultsGrid
-                  items={[
-                    {
-                      label: 'Profit (from equity)',
-                      value: formatCurrency(results.saleProfit),
-                    },
-                    {
-                      label: 'Profit (from deposit)',
-                      value: formatCurrency(results.saleProfitWithoutPrincipal),
                     },
                   ]}
                 />
