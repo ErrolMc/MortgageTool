@@ -6,8 +6,12 @@ import {
   parseInputNumber,
   type ValidationErrors,
 } from '@/hooks/useBaseMortgageCalculator';
-import { calculateSplitMortgage, type SplitMortgageInputs, type SplitMortgageResults } from '@/calculations/splitMortgageCalculations';
-import { AgeOfMortgage } from '@/calculations/mortgageTypes';
+import { calculateSplitMortgage } from '@/app/src/calculations/splitMortgageCalculations';
+import {
+  SplitMortgageInputs,
+  SplitMortgageResults,
+} from '@/app/src/types/splitMortgageTypes';
+
 // Extend ValidationErrors for split mortgage specific fields
 interface SplitValidationErrors extends ValidationErrors {
   salePrice?: string;
@@ -16,7 +20,7 @@ interface SplitValidationErrors extends ValidationErrors {
 }
 
 // Re-export for convenience
-export { formatCurrency, formatInputNumber, parseInputNumber, type AgeOfMortgage as YearOption };
+export { formatCurrency, formatInputNumber, parseInputNumber };
 
 export function useSplitMortgageCalculator() {
   const baseInputForm = useBaseMortgageInputForm();
@@ -47,8 +51,6 @@ export function useSplitMortgageCalculator() {
   );
   const [person1RepaymentShare, setPerson1RepaymentShare] =
     useState<number>(0.5);
-  const [person1VoluntaryRepayment, setPerson1VoluntaryRepayment] = useState<number>(0);
-  const [person2VoluntaryRepayment, setPerson2VoluntaryRepayment] = useState<number>(0);
   const [salePrice, setSalePrice] = useState<number>(0);
 
   const totalDeposit = person1Deposit + person2Deposit;
@@ -74,26 +76,24 @@ export function useSplitMortgageCalculator() {
   if (person1RepaymentShare > 1)
     validationErrors.person1RepaymentShare =
       'Repayment share cannot exceed 100%';
-  if (person1VoluntaryRepayment < 0)
-    validationErrors.person1VoluntaryRepayment = 'Voluntary repayment cannot be negative';
-  if (person2VoluntaryRepayment < 0)
-    validationErrors.person2VoluntaryRepayment = 'Voluntary repayment cannot be negative';
   if (salePrice < 0)
     validationErrors.salePrice = 'Sale price cannot be negative';
 
   const results = useMemo((): SplitMortgageResults => {
     const inputs: SplitMortgageInputs = {
+      // Base mortgage inputs
       price: price || 0,
-      person1Deposit,
-      person2Deposit,
-      person1RepaymentShare,
-      person1VoluntaryRepayment,
-      person2VoluntaryRepayment,
+      deposit: totalDeposit,
       rate: rate || 0,
       termYears: termYears || 0,
       frequency,
       ageOfMortgage,
       salePrice,
+
+      // Split-specific inputs
+      person1Deposit,
+      person2Deposit,
+      person1RepaymentShare,
     };
 
     return calculateSplitMortgage(inputs);
@@ -101,9 +101,8 @@ export function useSplitMortgageCalculator() {
     price,
     person1Deposit,
     person2Deposit,
+    totalDeposit,
     person1RepaymentShare,
-    person1VoluntaryRepayment,
-    person2VoluntaryRepayment,
     rate,
     termYears,
     frequency,
@@ -116,8 +115,6 @@ export function useSplitMortgageCalculator() {
     setPerson1Deposit(baseInputForm.deposit / 2);
     setPerson2Deposit(baseInputForm.deposit / 2);
     setPerson1RepaymentShare(0.5);
-    setPerson1VoluntaryRepayment(0);
-    setPerson2VoluntaryRepayment(0);
     setSalePrice(0);
   };
 
@@ -131,10 +128,6 @@ export function useSplitMortgageCalculator() {
     setPerson2Deposit,
     person1RepaymentShare,
     setPerson1RepaymentShare,
-    person1VoluntaryRepayment,
-    setPerson1VoluntaryRepayment,
-    person2VoluntaryRepayment,
-    setPerson2VoluntaryRepayment,
     salePrice,
     setSalePrice,
     rate,

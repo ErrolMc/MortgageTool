@@ -4,5 +4,5 @@ import {
   calculateTotalPeriods,
   calculatePerPeriodRate,
   calculateMortgageRepaymentForPeriod,
-} from '../mortgageCalculations';
+} from '../mortgageCalculationUtilities';
 

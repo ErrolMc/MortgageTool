@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Frequency, AgeOfMortgage } from '@/calculations/mortgageTypes';
+import { Frequency, AgeOfMortgage } from '@/app/src/types/mortgageTypes';
 
 export interface MortgagePreset {
   id: string;

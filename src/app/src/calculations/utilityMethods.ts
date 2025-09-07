@@ -1,4 +1,4 @@
-import { Frequency, AgeOfMortgage } from '@/calculations/mortgageTypes';
+import { Frequency, AgeOfMortgage } from '@/app/src/types/mortgageTypes';
 
 export const FREQUENCY_LABEL: Record<Frequency, string> = {
   yearly: 'Yearly',

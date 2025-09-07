@@ -4,8 +4,8 @@ import {
   formatCurrency,
   type ValidationErrors,
 } from '@/hooks/useBaseMortgageCalculator';
-import { calculateMortgage } from '@/calculations/mortgageCalculations';
-import { type MortgageInputs, type MortgageResults } from '@/calculations/mortgageTypes';
+import { calculateMortgage } from '@/app/src/calculations/mortgageCalculations';
+import { type MortgageInputs, type MortgageResults } from '@/app/src/types/mortgageTypes';
 
 // Extend ValidationErrors for sale price
 interface MortgageValidationErrors extends ValidationErrors {

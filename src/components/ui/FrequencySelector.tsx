@@ -1,6 +1,6 @@
 import React from 'react';
-import { Frequency } from '@/calculations/mortgageTypes';
-import { FREQUENCY_LABEL } from '@/calculations/utilityMethods';
+import { Frequency } from '@/app/src/types/mortgageTypes';
+import { FREQUENCY_LABEL } from '@/app/src/calculations/utilityMethods';
 
 interface FrequencySelectorProps {
   value: Frequency;

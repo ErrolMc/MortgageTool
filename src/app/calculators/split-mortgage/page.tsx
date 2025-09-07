@@ -8,14 +8,10 @@ import {
 } from './useSplitMortgageCalculator';
 import { NumberFormField } from '@/components/ui/FormField';
 import { FrequencySelector } from '@/components/ui/FrequencySelector';
-import {
-  ResultsCard,
-  ResultsGrid,
-  ResultsRow,
-} from '@/components/ui/ResultsCard';
+import { ResultsCard, ResultsGrid } from '@/components/ui/ResultsCard';
 import { usePresets, type MortgagePreset } from '@/hooks/usePresets';
 import { PresetManager } from '@/components/ui/PresetManager';
-import { AgeOfMortgage } from '@/calculations/mortgageTypes';
+import { AgeOfMortgage } from '@/app/src/types/mortgageTypes';
 
 export default function SplitMortgageCalculatorPage() {
   const {
@@ -27,10 +23,6 @@ export default function SplitMortgageCalculatorPage() {
     setPerson2Deposit,
     person1RepaymentShare,
     setPerson1RepaymentShare,
-    person1VoluntaryRepayment,
-    setPerson1VoluntaryRepayment,
-    person2VoluntaryRepayment,
-    setPerson2VoluntaryRepayment,
     salePrice,
     setSalePrice,
     rate,
@@ -244,45 +236,18 @@ export default function SplitMortgageCalculatorPage() {
 
           <ResultsCard title={`${FREQUENCY_LABEL[frequency]} repayment`}>
             <p className="text-3xl font-semibold">
-              {formatCurrency(results.payment)}
+              {formatCurrency(results.paymentForPeriod)}
             </p>
             <div className="mt-2 text-sm text-black/70 dark:text-white/70 space-y-1">
-              <p>Person 1: {formatCurrency(results.person1Payment)}</p>
-              <p>Person 2: {formatCurrency(results.person2Payment)}</p>
+              <p>
+                Person 1:{' '}
+                {formatCurrency(results.person1.mandatoryPaymentPerPeriod)}
+              </p>
+              <p>
+                Person 2:{' '}
+                {formatCurrency(results.person2.mandatoryPaymentPerPeriod)}
+              </p>
             </div>
-
-            {(person1VoluntaryRepayment > 0 ||
-              person2VoluntaryRepayment > 0) && (
-              <div className="mt-3 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-md">
-                <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mb-2">
-                  Including voluntary repayments:
-                </p>
-                <div className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
-                  <p>
-                    Total per period:{' '}
-                    {formatCurrency(results.totalPaymentWithVoluntary)}
-                  </p>
-                  <p>
-                    Person 1: {formatCurrency(results.person1TotalPayment)}{' '}
-                    (Principal:{' '}
-                    {formatCurrency(
-                      results.paymentPrincipal * person1RepaymentShare +
-                        person1VoluntaryRepayment
-                    )}
-                    )
-                  </p>
-                  <p>
-                    Person 2: {formatCurrency(results.person2TotalPayment)}{' '}
-                    (Principal:{' '}
-                    {formatCurrency(
-                      results.paymentPrincipal * (1 - person1RepaymentShare) +
-                        person2VoluntaryRepayment
-                    )}
-                    )
-                  </p>
-                </div>
-              </div>
-            )}
 
             <div className="mt-3">
               <label className="block text-sm mb-2">
@@ -290,7 +255,9 @@ export default function SplitMortgageCalculatorPage() {
               </label>
               <select
                 value={ageOfMortgage}
-                onChange={e => setAgeOfMortgage(e.target.value as AgeOfMortgage)}
+                onChange={e =>
+                  setAgeOfMortgage(e.target.value as AgeOfMortgage)
+                }
                 className="w-full rounded-md border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 px-3 py-2 text-sm text-black dark:text-white [&>option]:bg-black/5 [&>option]:dark:bg-white/5 [&>option]:text-black [&>option]:dark:text-white"
                 style={{
                   backgroundColor: 'var(--background)',
@@ -310,13 +277,21 @@ export default function SplitMortgageCalculatorPage() {
                 <span className="text-black/70 dark:text-white/70">
                   Principal{' '}
                 </span>
-                <span>{formatCurrency(results.paymentPrincipal)}</span>
+                <span>
+                  {formatCurrency(
+                    results.principalFromOnePaymentAtAgeOfMortgage
+                  )}
+                </span>
               </div>
               <div className="text-sm">
                 <span className="text-black/70 dark:text-white/70">
                   Interest{' '}
                 </span>
-                <span>{formatCurrency(results.paymentInterest)}</span>
+                <span>
+                  {formatCurrency(
+                    results.interestFromOnePaymentAtAgeOfMortgage
+                  )}
+                </span>
               </div>
             </div>
             <p className="text-xs text-black/60 dark:text-white/60 mt-2">
@@ -331,19 +306,15 @@ export default function SplitMortgageCalculatorPage() {
               items={[
                 {
                   label: 'Person 1 equity',
-                  value: formatCurrency(results.person1Equity),
+                  value: formatCurrency(
+                    results.person1.totalEquityAtAgeOfMortgage
+                  ),
                 },
                 {
                   label: 'Person 2 equity',
-                  value: formatCurrency(results.person2Equity),
-                },
-                {
-                  label: 'Person 1 share',
-                  value: `${results.person1EquityShare.toFixed(1)}%`,
-                },
-                {
-                  label: 'Person 2 share',
-                  value: `${results.person2EquityShare.toFixed(1)}%`,
+                  value: formatCurrency(
+                    results.person2.totalEquityAtAgeOfMortgage
+                  ),
                 },
               ]}
             />
@@ -354,19 +325,38 @@ export default function SplitMortgageCalculatorPage() {
               items={[
                 {
                   label: 'Person 1 total interest',
-                  value: formatCurrency(results.person1TotalInterest),
+                  value: formatCurrency(
+                    results.person1.interestPaidFromPaymentsAtAgeOfMortgage
+                  ),
                 },
                 {
                   label: 'Person 2 total interest',
-                  value: formatCurrency(results.person2TotalInterest),
+                  value: formatCurrency(
+                    results.person2.interestPaidFromPaymentsAtAgeOfMortgage
+                  ),
                 },
                 {
                   label: 'Person 1 principal gained',
-                  value: formatCurrency(results.person1Equity - person1Deposit),
+                  value: formatCurrency(
+                    results.person1.principalGainedFromPaymentsAtAgeOfMortgage
+                  ),
                 },
                 {
                   label: 'Person 2 principal gained',
-                  value: formatCurrency(results.person2Equity - person2Deposit),
+                  value: formatCurrency(
+                    results.person2.principalGainedFromPaymentsAtAgeOfMortgage
+                  ),
+                },
+              ]}
+            />
+
+            <div className="border-t border-black/10 dark:border-white/15 my-4" />
+
+            <ResultsGrid
+              items={[
+                {
+                  label: 'Remaining balance',
+                  value: formatCurrency(results.remainingBalance),
                 },
               ]}
             />
@@ -381,12 +371,15 @@ export default function SplitMortgageCalculatorPage() {
                 },
                 {
                   label: 'Principal',
-                  value: formatCurrency(results.principal),
+                  value: formatCurrency(results.loanAmount),
                 },
-                { label: 'Interest', value: formatCurrency(results.interest) },
+                {
+                  label: 'Interest',
+                  value: formatCurrency(results.totalInterest),
+                },
                 {
                   label: 'Number of payments',
-                  value: results.n.toLocaleString(),
+                  value: results.totalPeriods.toLocaleString(),
                 },
               ]}
             />
@@ -437,7 +430,7 @@ export default function SplitMortgageCalculatorPage() {
                   items={[
                     {
                       label: 'Sale price',
-                      value: formatCurrency(results.saleProceeds),
+                      value: formatCurrency(salePrice),
                     },
                     {
                       label: 'Remaining mortgage',
@@ -446,10 +439,6 @@ export default function SplitMortgageCalculatorPage() {
                     {
                       label: 'Net proceeds',
                       value: formatCurrency(results.netProceeds),
-                    },
-                    {
-                      label: 'Total profit/loss',
-                      value: formatCurrency(results.saleProfit),
                     },
                   ]}
                 />
@@ -460,11 +449,11 @@ export default function SplitMortgageCalculatorPage() {
                   items={[
                     {
                       label: 'Person 1 proceeds',
-                      value: formatCurrency(results.person1SaleProceeds),
+                      value: formatCurrency(results.person1.saleProceeds),
                     },
                     {
                       label: 'Person 2 proceeds',
-                      value: formatCurrency(results.person2SaleProceeds),
+                      value: formatCurrency(results.person2.saleProceeds),
                     },
                   ]}
                 />

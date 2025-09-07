@@ -7,8 +7,8 @@ import {
   DEFAULT_FREQUENCY,
   DEFAULT_AGE_OF_MORTGAGE,
 } from '@/constants/mortgage';
-import { Frequency, AgeOfMortgage } from '@/calculations/mortgageTypes';
-import { FREQUENCY_LABEL, YEAR_OPTIONS, INPUT_CONSTRAINTS } from '@/calculations/utilityMethods';
+import { Frequency, AgeOfMortgage } from '@/app/src/types/mortgageTypes';
+import { FREQUENCY_LABEL, YEAR_OPTIONS, INPUT_CONSTRAINTS } from '@/app/src/calculations/utilityMethods';
 
 
 export function formatNumber(n: number): string {

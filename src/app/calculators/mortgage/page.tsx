@@ -4,7 +4,7 @@ import {
   useMortgageCalculator,
   formatCurrency,
 } from './useMortgageCalculator';
-import { type Frequency, type AgeOfMortgage } from '@/calculations/mortgageTypes';
+import { type Frequency, type AgeOfMortgage } from '@/app/src/types/mortgageTypes';
 import {
   formatInputNumber,
   parseInputNumber,
