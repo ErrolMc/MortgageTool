@@ -338,18 +338,23 @@ describe('Utility Functions', () => {
       const periodRate = calculatePerPeriodRate(5.59, periodsPerYear);
 
       const ageOfMortgage = '5';
-      const expectedRemainingBalanceAtAgeOfMortgage = 370282;
-      expect(
-        Math.ceil(
-          calculateRemainingBalanceAtAgeOfMortgage(
-            loanAmount,
-            paymentForPeriod,
-            periodRate,
-            periodsPerYear,
-            ageOfMortgage
-          )
-        )
-      ).toBeCloseTo(expectedRemainingBalanceAtAgeOfMortgage);
+      const expectedRemainingBalanceAtAgeOfMortgage = Math.ceil(370281.06);
+      const expectedStartOfPeriodBalanceAtAgeOfMortgage = Math.ceil(370847.33);
+
+      const { remainingBalance, startOfPeriodBalance } =
+        calculateRemainingBalanceAtAgeOfMortgage(
+          loanAmount,
+          paymentForPeriod,
+          periodRate,
+          periodsPerYear,
+          ageOfMortgage
+        );
+      expect(Math.ceil(remainingBalance)).toBeCloseTo(
+        expectedRemainingBalanceAtAgeOfMortgage
+      );
+      expect(Math.ceil(startOfPeriodBalance)).toBeCloseTo(
+        expectedStartOfPeriodBalanceAtAgeOfMortgage
+      );
     });
 
     it('should calculate remaining balance at age of mortgage correctly 2', () => {
@@ -360,17 +365,19 @@ describe('Utility Functions', () => {
 
       const ageOfMortgage = '5';
       const expectedRemainingBalanceAtAgeOfMortgage = 231456;
-      expect(
-        Math.ceil(
-          calculateRemainingBalanceAtAgeOfMortgage(
-            loanAmount,
-            paymentForPeriod,
-            periodRate,
-            periodsPerYear,
-            ageOfMortgage
-          )
-        )
-      ).toBeCloseTo(expectedRemainingBalanceAtAgeOfMortgage);
+
+      const { remainingBalance, startOfPeriodBalance } =
+        calculateRemainingBalanceAtAgeOfMortgage(
+          loanAmount,
+          paymentForPeriod,
+          periodRate,
+          periodsPerYear,
+          ageOfMortgage
+        );
+
+      expect(Math.ceil(remainingBalance)).toBeCloseTo(
+        expectedRemainingBalanceAtAgeOfMortgage
+      );
     });
 
     it('should calculate remaining balance at age of mortgage correctly 3', () => {
@@ -381,17 +388,18 @@ describe('Utility Functions', () => {
 
       const ageOfMortgage = '5';
       const expectedRemainingBalanceAtAgeOfMortgage = Math.floor(370281.06);
-      expect(
-        Math.floor(
-          calculateRemainingBalanceAtAgeOfMortgage(
-            loanAmount,
-            paymentForPeriod,
-            periodRate,
-            periodsPerYear,
-            ageOfMortgage
-          )
-        )
-      ).toBeCloseTo(expectedRemainingBalanceAtAgeOfMortgage);
+
+      const { remainingBalance, startOfPeriodBalance } =
+        calculateRemainingBalanceAtAgeOfMortgage(
+          loanAmount,
+          paymentForPeriod,
+          periodRate,
+          periodsPerYear,
+          ageOfMortgage
+        );
+      expect(Math.floor(remainingBalance)).toBeCloseTo(
+        expectedRemainingBalanceAtAgeOfMortgage
+      );
     });
 
     it('should calculate remaining balance at age of mortgage correctly 4', () => {
@@ -402,29 +410,31 @@ describe('Utility Functions', () => {
 
       const ageOfMortgage = 'deposit';
       const expectedRemainingBalanceAtAgeOfMortgage = 600000;
-      expect(
+
+      const { remainingBalance, startOfPeriodBalance } =
         calculateRemainingBalanceAtAgeOfMortgage(
           loanAmount,
           paymentForPeriod,
           periodRate,
           periodsPerYear,
           ageOfMortgage
-        )
-      ).toBeCloseTo(expectedRemainingBalanceAtAgeOfMortgage);
+        );
+
+      expect(remainingBalance).toBeCloseTo(
+        expectedRemainingBalanceAtAgeOfMortgage
+      );
     });
   });
 
   describe('calculateInterestForOnePaymentAtAgeOfMortgage', () => {
     it('should calculate interest for one payment at age of mortgage correctly', () => {
-      const loanAmount = 400000;
-      const remainingBalance = 370847.33;
+      const startOfPeriodBalance = 370847.33;
       const periodRate = calculatePerPeriodRate(5.59, 12);
       const ageOfMortgage = '5';
       const expectedInterestForOnePaymentAtAgeOfMortgage = 1727.53;
       expect(
         calculateInterestForOnePaymentAtAgeOfMortgage(
-          loanAmount,
-          remainingBalance,
+          startOfPeriodBalance,
           periodRate,
           ageOfMortgage
         )
@@ -432,15 +442,13 @@ describe('Utility Functions', () => {
     });
 
     it('should calculate interest for one payment at age of mortgage correctly 1', () => {
-      const loanAmount = 400000;
-      const remainingBalance = 400000;
+      const startOfPeriodBalance = 400000;
       const periodRate = calculatePerPeriodRate(5.59, 12);
       const ageOfMortgage = 'first';
       const expectedInterestForOnePaymentAtAgeOfMortgage = 1863.33;
       expect(
         calculateInterestForOnePaymentAtAgeOfMortgage(
-          loanAmount,
-          remainingBalance,
+          startOfPeriodBalance,
           periodRate,
           ageOfMortgage
         )
@@ -448,15 +456,13 @@ describe('Utility Functions', () => {
     });
 
     it('should calculate interest for one payment at age of mortgage correctly 2', () => {
-      const loanAmount = 600000;
-      const remainingBalance = 497628.88;
+      const startOfPeriodBalance = 497628.88;
       const periodRate = calculatePerPeriodRate(5.59, 12);
       const ageOfMortgage = '10';
       const expectedInterestForOnePaymentAtAgeOfMortgage = 2318.12;
       expect(
         calculateInterestForOnePaymentAtAgeOfMortgage(
-          loanAmount,
-          remainingBalance,
+          startOfPeriodBalance,
           periodRate,
           ageOfMortgage
         )
@@ -464,16 +470,14 @@ describe('Utility Functions', () => {
     });
 
     it('should calculate interest for one payment at age of mortgage correctly 3', () => {
-      const loanAmount = 600000;
-      const remainingBalance = 556270.99;
+      const startOfPeriodBalance = 556270.99;
       const periodRate = calculatePerPeriodRate(5.59, 12);
       const ageOfMortgage = '5';
       const expectedInterestForOnePaymentAtAgeOfMortgage = 2591;
       expect(
         Math.floor(
           calculateInterestForOnePaymentAtAgeOfMortgage(
-            loanAmount,
-            remainingBalance,
+            startOfPeriodBalance,
             periodRate,
             ageOfMortgage
           )
@@ -576,25 +580,27 @@ describe('Utility Functions', () => {
       const paymentForPeriod = 2293.79;
       const ageOfMortgage = '5';
       const periodsPerYear = 12;
-      const expectedTotalInterestPaidFromPaymentsUpToAgeOfMortgage = Math.floor(107908.72);
+      const expectedTotalInterestPaidFromPaymentsUpToAgeOfMortgage =
+        Math.floor(107908.72);
       expect(
         Math.floor(
           calculateTotalInterestPaidFromPaymentsUpToAgeOfMortgage(
-          totalPrincipalGainedFromPaymentsUpToAgeOfMortgage,
-          paymentForPeriod,
-          ageOfMortgage,
-          periodsPerYear
+            totalPrincipalGainedFromPaymentsUpToAgeOfMortgage,
+            paymentForPeriod,
+            ageOfMortgage,
+            periodsPerYear
           )
         )
       ).toBeCloseTo(expectedTotalInterestPaidFromPaymentsUpToAgeOfMortgage);
     });
 
     it('should calculate total interest paid from payments up to age of mortgage correctly 1', () => {
-      const totalPrincipalGainedFromPaymentsUpToAgeOfMortgage = 68995.80;
+      const totalPrincipalGainedFromPaymentsUpToAgeOfMortgage = 68995.8;
       const paymentForPeriod = 2293.79;
       const ageOfMortgage = '10';
       const periodsPerYear = 12;
-      const expectedTotalInterestPaidFromPaymentsUpToAgeOfMortgage = Math.floor(206259.51);
+      const expectedTotalInterestPaidFromPaymentsUpToAgeOfMortgage =
+        Math.floor(206259.51);
       expect(
         calculateTotalInterestPaidFromPaymentsUpToAgeOfMortgage(
           totalPrincipalGainedFromPaymentsUpToAgeOfMortgage,

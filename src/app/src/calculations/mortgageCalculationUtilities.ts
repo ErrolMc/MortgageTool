@@ -91,9 +91,9 @@ export function calculateRemainingBalanceAtAgeOfMortgage(
   periodRate: number,
   periodsPerYear: number,
   ageOfMortgage: AgeOfMortgage
-) {
+): { remainingBalance: number; startOfPeriodBalance: number } {
   if (ageOfMortgage === 'deposit') {
-    return loanAmount;
+    return { remainingBalance: loanAmount, startOfPeriodBalance: loanAmount };
   }
 
   if (ageOfMortgage === 'first') {
@@ -103,7 +103,7 @@ export function calculateRemainingBalanceAtAgeOfMortgage(
     const remainingBalance: number =
       loanAmount - principalFromOnePaymentAtAgeOfMortgage;
 
-    return remainingBalance;
+    return { remainingBalance, startOfPeriodBalance: loanAmount };
   }
 
   // Calculate for specific year
@@ -113,19 +113,20 @@ export function calculateRemainingBalanceAtAgeOfMortgage(
   );
 
   // Calculate total principal and interest paid up to the selected year
+  let startOfPeriodBalance: number = loanAmount;
   let remainingBalance: number = loanAmount;
   for (let i = 0; i < totalPeriods; i++) {
+    startOfPeriodBalance = remainingBalance;
     const periodInterest: number = remainingBalance * periodRate;
     const periodPrincipal: number = paymentForPeriod - periodInterest;
     remainingBalance -= periodPrincipal;
   }
 
-  return remainingBalance;
+  return { remainingBalance, startOfPeriodBalance };
 }
 
 export function calculateInterestForOnePaymentAtAgeOfMortgage(
-  loanAmount: number,
-  remainingBalance: number,
+  startOfPeriodBalance: number,
   periodRate: number,
   ageOfMortgage: AgeOfMortgage
 ) {
@@ -133,8 +134,7 @@ export function calculateInterestForOnePaymentAtAgeOfMortgage(
     return 0;
   }
 
-  if (ageOfMortgage === 'first') return loanAmount * periodRate;
-  return remainingBalance * periodRate;
+  return startOfPeriodBalance * periodRate;
 }
 
 export function calculatePrincipalForOnePaymentAtAgeOfMortgage(

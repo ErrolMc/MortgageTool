@@ -1,4 +1,7 @@
-import { type MortgageInputs, type MortgageResults } from '../types/mortgageTypes';
+import {
+  type MortgageInputs,
+  type MortgageResults,
+} from '../types/mortgageTypes';
 import {
   calculateLoanAmount,
   calculatePeriodsPerYear,
@@ -31,18 +34,18 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResults {
   const totalInterest = calculateTotalInterestAmount(totalPaid, loanAmount);
 
   // values that change with age of mortgage
-  const remainingBalance = calculateRemainingBalanceAtAgeOfMortgage(
-    loanAmount,
-    paymentForPeriod,
-    periodRate,
-    periodsPerYear,
-    inputs.ageOfMortgage
-  );
+  const { remainingBalance, startOfPeriodBalance } =
+    calculateRemainingBalanceAtAgeOfMortgage(
+      loanAmount,
+      paymentForPeriod,
+      periodRate,
+      periodsPerYear,
+      inputs.ageOfMortgage
+    );
 
   const interestFromOnePaymentAtAgeOfMortgage =
     calculateInterestForOnePaymentAtAgeOfMortgage(
-      loanAmount,
-      remainingBalance,
+      startOfPeriodBalance,
       periodRate,
       inputs.ageOfMortgage
     );
