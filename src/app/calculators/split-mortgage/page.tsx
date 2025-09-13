@@ -12,6 +12,7 @@ import { ResultsCard, ResultsGrid } from '@/components/ui/ResultsCard';
 import { usePresets, type MortgagePreset } from '@/hooks/usePresets';
 import { PresetManager } from '@/components/ui/PresetManager';
 import { AgeOfMortgage } from '@/app/src/types/mortgageTypes';
+import { INPUT_CONSTRAINTS, FREQUENCY_LABEL, YEAR_OPTIONS } from '@/app/src/calculations/utilityMethods';
 
 export default function SplitMortgageCalculatorPage() {
   const {
@@ -38,9 +39,6 @@ export default function SplitMortgageCalculatorPage() {
     results,
     validationErrors,
     resetForm,
-    FREQUENCY_LABEL,
-    YEAR_OPTIONS,
-    INPUT_CONSTRAINTS,
   } = useSplitMortgageCalculator();
 
   const { presets, savePreset, deletePreset } = usePresets();

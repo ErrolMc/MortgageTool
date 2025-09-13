@@ -31,9 +31,6 @@ export function useMortgageCalculator() {
     setAgeOfMortgage,
     validationErrors: baseValidationErrors,
     resetForm: baseResetForm,
-    FREQUENCY_LABEL,
-    YEAR_OPTIONS,
-    INPUT_CONSTRAINTS,
   } = useBaseMortgageInputForm();
 
   // Add sale price state
@@ -89,10 +86,5 @@ export function useMortgageCalculator() {
 
     // Actions
     resetForm,
-
-    // Constants
-    FREQUENCY_LABEL,
-    YEAR_OPTIONS,
-    INPUT_CONSTRAINTS,
   };
 }

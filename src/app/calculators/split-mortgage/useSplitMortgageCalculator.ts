@@ -37,9 +37,6 @@ export function useSplitMortgageCalculator() {
     setAgeOfMortgage,
     validationErrors: baseValidationErrors,
     resetForm: baseResetForm,
-    FREQUENCY_LABEL,
-    YEAR_OPTIONS,
-    INPUT_CONSTRAINTS,
   } = baseInputForm;
 
   // Split-specific state
@@ -147,10 +144,5 @@ export function useSplitMortgageCalculator() {
 
     // Actions
     resetForm,
-
-    // Constants
-    FREQUENCY_LABEL,
-    YEAR_OPTIONS,
-    INPUT_CONSTRAINTS,
   };
 }

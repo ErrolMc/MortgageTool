@@ -13,6 +13,7 @@ import { ResultsCard, ResultsGrid } from '@/components/ui/ResultsCard';
 import { NumberFormField } from '@/components/ui/FormField';
 import { usePresets, type MortgagePreset } from '@/hooks/usePresets';
 import { PresetManager } from '@/components/ui/PresetManager';
+import { INPUT_CONSTRAINTS, FREQUENCY_LABEL, YEAR_OPTIONS } from '@/app/src/calculations/utilityMethods';
 
 export default function MortgageCalculatorPage() {
   const {
@@ -33,9 +34,6 @@ export default function MortgageCalculatorPage() {
     results,
     validationErrors,
     resetForm,
-    FREQUENCY_LABEL,
-    YEAR_OPTIONS,
-    INPUT_CONSTRAINTS,
   } = useMortgageCalculator();
 
   const { presets, savePreset, deletePreset } = usePresets();
@@ -73,7 +71,19 @@ export default function MortgageCalculatorPage() {
       </header>
 
       <div className="grid gap-6 sm:grid-cols-2">
+        
         <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-lg font-medium">Input Details</h2>
+            <button
+              type="button"
+              onClick={resetForm}
+              className="text-sm text-black/70 dark:text-white/70 hover:text-black dark:hover:text-white underline"
+            >
+              Reset to defaults
+            </button>
+          </div>
+          
           <NumberFormField
             label="House price"
             id="house-price"

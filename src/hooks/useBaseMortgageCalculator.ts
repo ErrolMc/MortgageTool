@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   DEFAULT_HOUSE_PRICE,
   DEFAULT_DEPOSIT,
@@ -8,8 +8,6 @@ import {
   DEFAULT_AGE_OF_MORTGAGE,
 } from '@/constants/mortgage';
 import { Frequency, AgeOfMortgage } from '@/app/src/types/mortgageTypes';
-import { FREQUENCY_LABEL, YEAR_OPTIONS, INPUT_CONSTRAINTS } from '@/app/src/calculations/utilityMethods';
-
 
 export function formatNumber(n: number): string {
   return n.toLocaleString(undefined, {
@@ -88,10 +86,5 @@ export function useBaseMortgageInputForm() {
 
     // Actions
     resetForm,
-
-    // Constants
-    FREQUENCY_LABEL,
-    YEAR_OPTIONS,
-    INPUT_CONSTRAINTS,
   };
 }

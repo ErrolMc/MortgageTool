@@ -13,13 +13,7 @@ import {
   calculatePrincipalForOnePaymentAtAgeOfMortgage,
   calculateTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage,
   calculateTotalInterestPaidFromPaymentsUpToAgeOfMortgage,
-  calculateMonthlyRepayment,
 } from '../mortgageCalculationUtilities';
-import {
-  Frequency,
-  AgeOfMortgage,
-  type MortgageInputs,
-} from '../../types/mortgageTypes';
 
 describe('Utility Functions', () => {
   describe('calculatePeriodsPerYear', () => {
