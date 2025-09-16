@@ -1,5 +1,5 @@
 import { calculateMortgage } from '../mortgageCalculations';
-import { MortgageInputs, MortgageResults } from '../../types/mortgageTypes';
+import { MortgageInputs, MortgageResults, AgeOfMortgage } from '../../types/mortgageTypes';
 
 //
 // Check values from:
@@ -14,7 +14,7 @@ describe('Mortgage Calculations', () => {
       rate: 5.59,
       termYears: 30,
       frequency: 'monthly',
-      ageOfMortgage: '5',
+      ageOfMortgage: AgeOfMortgage.MakeFromEnum('5'),
       salePrice: 800000,
     } as MortgageInputs;
 
@@ -38,7 +38,7 @@ describe('Mortgage Calculations', () => {
       rate: 5.59,
       termYears: 30,
       frequency: 'monthly',
-      ageOfMortgage: '5',
+      ageOfMortgage: AgeOfMortgage.MakeFromEnum('5'),
       salePrice: 650000,
     } as MortgageInputs;
 

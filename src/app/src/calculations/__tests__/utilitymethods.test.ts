@@ -14,6 +14,7 @@ import {
   calculateTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage,
   calculateTotalInterestPaidFromPaymentsUpToAgeOfMortgage,
 } from '../mortgageCalculationUtilities';
+import { AgeOfMortgage } from '@/app/src/types/mortgageTypes';
 
 describe('Utility Functions', () => {
   describe('calculatePeriodsPerYear', () => {
@@ -337,7 +338,7 @@ describe('Utility Functions', () => {
       const periodsPerYear = 12;
       const periodRate = calculatePerPeriodRate(5.59, periodsPerYear);
 
-      const ageOfMortgage = '5';
+      const ageOfMortgage = AgeOfMortgage.MakeFromEnum('5');
       const expectedRemainingBalanceAtAgeOfMortgage = Math.ceil(370281.06);
       const expectedStartOfPeriodBalanceAtAgeOfMortgage = Math.ceil(370847.33);
 
@@ -363,7 +364,7 @@ describe('Utility Functions', () => {
       const periodsPerYear = 52;
       const periodRate = calculatePerPeriodRate(5.59, periodsPerYear);
 
-      const ageOfMortgage = '5';
+      const ageOfMortgage = AgeOfMortgage.MakeFromEnum('5');
       const expectedRemainingBalanceAtAgeOfMortgage = 231456;
 
       const { remainingBalance, startOfPeriodBalance } =
@@ -386,7 +387,7 @@ describe('Utility Functions', () => {
       const periodsPerYear = 12;
       const periodRate = calculatePerPeriodRate(5.59, periodsPerYear);
 
-      const ageOfMortgage = '5';
+      const ageOfMortgage = AgeOfMortgage.MakeFromEnum('5');
       const expectedRemainingBalanceAtAgeOfMortgage = Math.floor(370281.06);
 
       const { remainingBalance, startOfPeriodBalance } =
@@ -408,7 +409,7 @@ describe('Utility Functions', () => {
       const periodsPerYear = 12;
       const periodRate = calculatePerPeriodRate(5.59, periodsPerYear);
 
-      const ageOfMortgage = 'deposit';
+      const ageOfMortgage = AgeOfMortgage.MakeFromEnum('deposit');
       const expectedRemainingBalanceAtAgeOfMortgage = 600000;
 
       const { remainingBalance, startOfPeriodBalance } =
@@ -430,7 +431,7 @@ describe('Utility Functions', () => {
     it('should calculate interest for one payment at age of mortgage correctly', () => {
       const startOfPeriodBalance = 370847.33;
       const periodRate = calculatePerPeriodRate(5.59, 12);
-      const ageOfMortgage = '5';
+      const ageOfMortgage = AgeOfMortgage.MakeFromEnum('5');
       const expectedInterestForOnePaymentAtAgeOfMortgage = 1727.53;
       expect(
         calculateInterestForOnePaymentAtAgeOfMortgage(
@@ -444,7 +445,7 @@ describe('Utility Functions', () => {
     it('should calculate interest for one payment at age of mortgage correctly 1', () => {
       const startOfPeriodBalance = 400000;
       const periodRate = calculatePerPeriodRate(5.59, 12);
-      const ageOfMortgage = 'first';
+      const ageOfMortgage = AgeOfMortgage.MakeFromFrequency('monthly');
       const expectedInterestForOnePaymentAtAgeOfMortgage = 1863.33;
       expect(
         calculateInterestForOnePaymentAtAgeOfMortgage(
@@ -458,7 +459,7 @@ describe('Utility Functions', () => {
     it('should calculate interest for one payment at age of mortgage correctly 2', () => {
       const startOfPeriodBalance = 497628.88;
       const periodRate = calculatePerPeriodRate(5.59, 12);
-      const ageOfMortgage = '10';
+      const ageOfMortgage = AgeOfMortgage.MakeFromEnum('10');
       const expectedInterestForOnePaymentAtAgeOfMortgage = 2318.12;
       expect(
         calculateInterestForOnePaymentAtAgeOfMortgage(
@@ -472,7 +473,7 @@ describe('Utility Functions', () => {
     it('should calculate interest for one payment at age of mortgage correctly 3', () => {
       const startOfPeriodBalance = 556270.99;
       const periodRate = calculatePerPeriodRate(5.59, 12);
-      const ageOfMortgage = '5';
+      const ageOfMortgage = AgeOfMortgage.MakeFromEnum('5');
       const expectedInterestForOnePaymentAtAgeOfMortgage = 2591;
       expect(
         Math.floor(
@@ -578,7 +579,7 @@ describe('Utility Functions', () => {
     it('should calculate total interest paid from payments up to age of mortgage correctly', () => {
       const totalPrincipalGainedFromPaymentsUpToAgeOfMortgage = 29718.94;
       const paymentForPeriod = 2293.79;
-      const ageOfMortgage = '5';
+      const ageOfMortgage = AgeOfMortgage.MakeFromEnum('5');
       const periodsPerYear = 12;
       const expectedTotalInterestPaidFromPaymentsUpToAgeOfMortgage =
         Math.floor(107908.72);
@@ -597,7 +598,7 @@ describe('Utility Functions', () => {
     it('should calculate total interest paid from payments up to age of mortgage correctly 1', () => {
       const totalPrincipalGainedFromPaymentsUpToAgeOfMortgage = 68995.8;
       const paymentForPeriod = 2293.79;
-      const ageOfMortgage = '10';
+      const ageOfMortgage = AgeOfMortgage.MakeFromEnum('10');
       const periodsPerYear = 12;
       const expectedTotalInterestPaidFromPaymentsUpToAgeOfMortgage =
         Math.floor(206259.51);
@@ -614,7 +615,7 @@ describe('Utility Functions', () => {
     it('should handle negative values correctly 1', () => {
       const totalPrincipalGainedFromPaymentsUpToAgeOfMortgage = -29718.94;
       const paymentForPeriod = 2293.79;
-      const ageOfMortgage = '5';
+      const ageOfMortgage = AgeOfMortgage.MakeFromEnum('5');
       const periodsPerYear = 12;
       const expectedTotalInterestPaidFromPaymentsUpToAgeOfMortgage = 0;
       expect(
@@ -630,7 +631,7 @@ describe('Utility Functions', () => {
     it('should handle negative values correctly 2', () => {
       const totalPrincipalGainedFromPaymentsUpToAgeOfMortgage = 29718.94;
       const paymentForPeriod = -2293.79;
-      const ageOfMortgage = '5';
+      const ageOfMortgage = AgeOfMortgage.MakeFromEnum('5');
       const periodsPerYear = 12;
       const expectedTotalInterestPaidFromPaymentsUpToAgeOfMortgage = 0;
       expect(
@@ -646,7 +647,7 @@ describe('Utility Functions', () => {
     it('should handle deposit correctly', () => {
       const totalPrincipalGainedFromPaymentsUpToAgeOfMortgage = 29718.94;
       const paymentForPeriod = 2293.79;
-      const ageOfMortgage = 'deposit';
+      const ageOfMortgage = AgeOfMortgage.MakeFromEnum('deposit');
       const periodsPerYear = 0;
       const expectedTotalInterestPaidFromPaymentsUpToAgeOfMortgage = 0;
       expect(

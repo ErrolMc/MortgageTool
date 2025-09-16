@@ -1,4 +1,4 @@
-import { Frequency, AgeOfMortgage } from '@/app/src/types/mortgageTypes';
+import { Frequency, AgeOfMortgageType } from '@/app/src/types/mortgageTypes';
 
 export const FREQUENCY_LABEL: Record<Frequency, string> = {
   yearly: 'Yearly',
@@ -14,7 +14,7 @@ export const PERIODS_PER_YEAR: Record<Frequency, number> = {
   weekly: 52,
 };
 
-export const YEAR_OPTIONS: { value: AgeOfMortgage; label: string }[] = [
+export const YEAR_OPTIONS: { value: AgeOfMortgageType; label: string }[] = [
   { value: 'deposit', label: 'Deposit only' },
   { value: 'first', label: 'First payment' },
   { value: '5', label: 'Year 5' },
@@ -25,6 +25,7 @@ export const YEAR_OPTIONS: { value: AgeOfMortgage; label: string }[] = [
   { value: '27', label: 'Year 27' },
   { value: '29', label: 'Year 29' },
   { value: '30', label: 'Year 30' },
+  { value: 'custom', label: 'Custom' },
 ];
 
 export const INPUT_CONSTRAINTS = {

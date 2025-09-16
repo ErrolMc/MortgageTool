@@ -1,7 +1,9 @@
+import { AgeOfMortgage, AgeOfMortgageType } from "@/app/src/types/mortgageTypes";
+
 // Default values
 export const DEFAULT_HOUSE_PRICE = 500_000;
 export const DEFAULT_DEPOSIT = 100_000;
 export const DEFAULT_RATE = 5.59; // annual %
 export const DEFAULT_TERM_YEARS = 30;
 export const DEFAULT_FREQUENCY = "monthly" as const;
-export const DEFAULT_AGE_OF_MORTGAGE = "first" as const;
+export const DEFAULT_AGE_OF_MORTGAGE_TYPE = 'first' as AgeOfMortgageType;

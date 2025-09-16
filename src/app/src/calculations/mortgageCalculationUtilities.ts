@@ -1,7 +1,4 @@
-import {
-  Frequency,
-  AgeOfMortgage
-} from '../types/mortgageTypes';
+import { Frequency, AgeOfMortgage } from '../types/mortgageTypes';
 import { PERIODS_PER_YEAR } from '@/app/src/calculations/utilityMethods';
 
 export function calculateLoanAmount(housePrice: number, totalDeposit: number) {
@@ -92,23 +89,8 @@ export function calculateRemainingBalanceAtAgeOfMortgage(
   periodsPerYear: number,
   ageOfMortgage: AgeOfMortgage
 ): { remainingBalance: number; startOfPeriodBalance: number } {
-  if (ageOfMortgage === 'deposit') {
-    return { remainingBalance: loanAmount, startOfPeriodBalance: loanAmount };
-  }
-
-  if (ageOfMortgage === 'first') {
-    const firstPaymentInterest: number = loanAmount * periodRate;
-    const principalFromOnePaymentAtAgeOfMortgage: number =
-      paymentForPeriod - firstPaymentInterest;
-    const remainingBalance: number =
-      loanAmount - principalFromOnePaymentAtAgeOfMortgage;
-
-    return { remainingBalance, startOfPeriodBalance: loanAmount };
-  }
-
-  // Calculate for specific year
   const totalPeriods: number = calculateTotalPeriods(
-    parseInt(ageOfMortgage),
+    ageOfMortgage.ageYears,
     periodsPerYear
   );
 
@@ -130,7 +112,7 @@ export function calculateInterestForOnePaymentAtAgeOfMortgage(
   periodRate: number,
   ageOfMortgage: AgeOfMortgage
 ) {
-  if (ageOfMortgage === 'deposit') {
+  if (ageOfMortgage.ageYears === 0) {
     return 0;
   }
 
@@ -162,7 +144,7 @@ export function calculateTotalInterestPaidFromPaymentsUpToAgeOfMortgage(
   periodsPerYear: number
 ) {
   if (
-    ageOfMortgage === 'deposit' ||
+    ageOfMortgage.ageYears === 0 ||
     totalPrincipalGainedFromPaymentsUpToAgeOfMortgage <= 0 ||
     paymentForPeriod <= 0 ||
     periodsPerYear <= 0
@@ -170,17 +152,10 @@ export function calculateTotalInterestPaidFromPaymentsUpToAgeOfMortgage(
     return 0;
   }
 
-  if (ageOfMortgage === 'first') {
-    const firstPaymentInterest =
-      paymentForPeriod - totalPrincipalGainedFromPaymentsUpToAgeOfMortgage;
-    return firstPaymentInterest;
-  }
-
   const totalPeriods: number = calculateTotalPeriods(
-    parseInt(ageOfMortgage),
+    ageOfMortgage.ageYears,
     periodsPerYear
   );
   const totalPaid = calculateTotalPaymentAmount(paymentForPeriod, totalPeriods);
   return totalPaid - totalPrincipalGainedFromPaymentsUpToAgeOfMortgage;
 }
-

@@ -5,7 +5,7 @@ import {
   type ValidationErrors,
 } from '@/hooks/useBaseMortgageCalculator';
 import { calculateMortgage } from '@/app/src/calculations/mortgageCalculations';
-import { type MortgageInputs, type MortgageResults } from '@/app/src/types/mortgageTypes';
+import { MortgageInputs, MortgageResults } from '@/app/src/types/mortgageTypes';
 
 // Extend ValidationErrors for sale price
 interface MortgageValidationErrors extends ValidationErrors {
@@ -27,6 +27,8 @@ export function useMortgageCalculator() {
     setTermYears,
     frequency,
     setFrequency,
+    ageOfMortgageType,
+    setAgeOfMortgageType,
     ageOfMortgage,
     setAgeOfMortgage,
     validationErrors: baseValidationErrors,
@@ -77,6 +79,8 @@ export function useMortgageCalculator() {
     setTermYears,
     frequency,
     setFrequency,
+    ageOfMortgageType,
+    setAgeOfMortgageType,
     ageOfMortgage,
     setAgeOfMortgage,
 

@@ -33,6 +33,8 @@ export function useSplitMortgageCalculator() {
     setTermYears,
     frequency,
     setFrequency,
+    ageOfMortgageType,
+    setAgeOfMortgageType,
     ageOfMortgage,
     setAgeOfMortgage,
     validationErrors: baseValidationErrors,
@@ -133,6 +135,8 @@ export function useSplitMortgageCalculator() {
     setTermYears,
     frequency,
     setFrequency,
+    ageOfMortgageType,
+    setAgeOfMortgageType,
     ageOfMortgage,
     setAgeOfMortgage,
 

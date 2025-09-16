@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Frequency, AgeOfMortgage } from '@/app/src/types/mortgageTypes';
+import { Frequency, AgeOfMortgage, AgeOfMortgageType } from '@/app/src/types/mortgageTypes';
 
 export interface MortgagePreset {
   id: string;
@@ -30,13 +30,49 @@ const STORAGE_KEY = 'mortgage-presets';
 export function usePresets() {
   const [presets, setPresets] = useState<MortgagePreset[]>([]);
 
+  // Helper function to reconstruct AgeOfMortgage objects from serialized data
+  const reconstructAgeOfMortgage = (data: unknown, frequency: Frequency): AgeOfMortgage => {
+    // Check if it's already a proper AgeOfMortgage class instance
+    if (data instanceof AgeOfMortgage) {
+      return data; // Already a class instance, return as-is
+    }
+    
+    // Check if it's a serialized plain object (has the private fields)
+    if (data && typeof data === 'object' && '_type' in data && '_ageYears' in data) {
+      const serializedData = data as { _type: string; _ageYears: number };
+      
+      if (serializedData._type === 'first') {
+        return AgeOfMortgage.MakeFromFrequency(frequency); // Default frequency for 'first'
+      } else if (serializedData._type === 'custom') {
+        return AgeOfMortgage.MakeCustom(serializedData._ageYears);
+      } else {
+        return AgeOfMortgage.MakeFromEnum(serializedData._type as AgeOfMortgageType);
+      }
+    }
+    
+    // Fallback for old presets that might have different structure
+    return AgeOfMortgage.MakeFromFrequency(frequency);
+  };
+
   // Load presets from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
         const parsed = JSON.parse(saved);
-        setPresets(Array.isArray(parsed) ? parsed : []);
+        if (Array.isArray(parsed)) {
+          // Reconstruct AgeOfMortgage objects for each preset
+          const reconstructedPresets: MortgagePreset[] = parsed.map((preset) => ({
+            ...preset,
+            data: {
+              ...preset.data,
+              ageOfMortgage: reconstructAgeOfMortgage(preset.data.ageOfMortgage, preset.data.frequency)
+            }
+          } as MortgagePreset));
+          setPresets(reconstructedPresets);
+        } else {
+          setPresets([]);
+        }
       } catch (error) {
         console.error('Failed to parse saved presets:', error);
         setPresets([]);
@@ -57,6 +93,8 @@ export function usePresets() {
       type,
       data,
     };
+
+    console.log('savePreset newPreset: ', newPreset);
 
     setPresets(prev => [...prev, newPreset]);
     return newPreset;

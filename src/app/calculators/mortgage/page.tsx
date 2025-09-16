@@ -4,7 +4,7 @@ import {
   useMortgageCalculator,
   formatCurrency,
 } from './useMortgageCalculator';
-import { type Frequency, type AgeOfMortgage } from '@/app/src/types/mortgageTypes';
+import { Frequency, AgeOfMortgageType } from '@/app/src/types/mortgageTypes';
 import {
   formatInputNumber,
   parseInputNumber,
@@ -29,6 +29,8 @@ export default function MortgageCalculatorPage() {
     setTermYears,
     frequency,
     setFrequency,
+    ageOfMortgageType,
+    setAgeOfMortgageType,
     ageOfMortgage,
     setAgeOfMortgage,
     results,
@@ -46,7 +48,7 @@ export default function MortgageCalculatorPage() {
     ageOfMortgage,
     deposit,
     salePrice,
-  };
+  } as MortgagePreset['data'];
 
   const handleLoadPreset = (preset: MortgagePreset) => {
     setPrice(preset.data.price);
@@ -54,6 +56,7 @@ export default function MortgageCalculatorPage() {
     setTermYears(preset.data.termYears);
     setFrequency(preset.data.frequency);
     setAgeOfMortgage(preset.data.ageOfMortgage);
+    setAgeOfMortgageType(preset.data.ageOfMortgage.type);
     if (preset.data.deposit !== undefined) setDeposit(preset.data.deposit);
     if (preset.data.salePrice !== undefined)
       setSalePrice(preset.data.salePrice);
@@ -181,8 +184,8 @@ export default function MortgageCalculatorPage() {
                 Payment breakdown for:
               </label>
               <select
-                value={ageOfMortgage}
-                onChange={e => setAgeOfMortgage(e.target.value as AgeOfMortgage)}
+                value={ageOfMortgageType}
+                onChange={e => setAgeOfMortgageType(e.target.value as AgeOfMortgageType)}
                 className="w-full rounded-md border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 px-3 py-2 text-sm text-black dark:text-white [&>option]:bg-black/5 [&>option]:dark:bg-white/5 [&>option]:text-black [&>option]:dark:text-white"
                 style={{
                   backgroundColor: 'var(--background)',
@@ -217,7 +220,7 @@ export default function MortgageCalculatorPage() {
           </ResultsCard>
 
           <ResultsCard
-            title={`Progress at ${ageOfMortgage === 'deposit' ? 'deposit only' : ageOfMortgage === 'first' ? 'start' : `year ${ageOfMortgage}`}`}
+            title={`Progress at ${ageOfMortgage.timeLabel}`}
           >
             <ResultsGrid
               items={[

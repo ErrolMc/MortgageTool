@@ -45,9 +45,90 @@ export class MortgageResults {
   }
 
   public get totalEquityAtAgeOfMortgage(): number {
-    return this.loanAmount + this.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage;
+    return (
+      this.loanAmount + this.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage
+    );
   }
 }
 
 export type Frequency = 'yearly' | 'monthly' | 'fortnightly' | 'weekly';
-export type AgeOfMortgage = 'deposit' | 'first' | '5' | '10' | '15' | '20' | '25' | '27' | '29' | '30';
+export type AgeOfMortgageType =
+  | 'deposit'
+  | 'first'
+  | '5'
+  | '10'
+  | '15'
+  | '20'
+  | '25'
+  | '27'
+  | '29'
+  | '30'
+  | 'custom';
+
+export class AgeOfMortgage {
+  private _type: AgeOfMortgageType;
+  private _ageYears: number;
+
+  private constructor(Type: AgeOfMortgageType) {
+    this._type = Type;
+    this._ageYears = 0;
+  }
+
+  public get ageYears(): number {
+    return this._ageYears;
+  }
+
+  public get type(): AgeOfMortgageType {
+    return this._type;
+  }
+
+  public static MakeCustom(AgeYears: number): AgeOfMortgage {
+    const obj = new AgeOfMortgage('custom');
+    obj._ageYears = AgeYears;
+    return obj;
+  }
+
+  public static MakeFromEnum(Type: AgeOfMortgageType): AgeOfMortgage {
+    const obj = new AgeOfMortgage(Type);
+    if (Type === 'deposit') {
+      obj._ageYears = 0;
+    } else if (Type === 'first') {
+      throw new Error('Need to use make with frequency');
+    } else if (Type === 'custom') {
+      obj._ageYears = 0;
+      return obj;
+    } else {
+      obj._ageYears = parseInt(Type);
+    }
+    return obj;
+  }
+
+  public static MakeFromFrequency(Frequency: Frequency): AgeOfMortgage {
+    const obj = new AgeOfMortgage('first');
+    switch (Frequency) {
+      case 'yearly':
+        obj._ageYears = 1;
+        break;
+      case 'monthly':
+        obj._ageYears = 1 / 12;
+        break;
+      case 'fortnightly':
+        obj._ageYears = 1 / 26;
+        break;
+      case 'weekly':
+        obj._ageYears = 1 / 52;
+        break;
+    }
+    return obj;
+  }
+
+  public get timeLabel(): string {
+    if (this._ageYears === 0) {
+      return 'deposit only';
+    } else if (this._type === 'first') {
+      return 'first payment';
+    } else {
+      return `year ${this._ageYears}`;
+    }
+  }
+}

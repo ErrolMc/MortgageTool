@@ -1,13 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   DEFAULT_HOUSE_PRICE,
   DEFAULT_DEPOSIT,
   DEFAULT_RATE,
   DEFAULT_TERM_YEARS,
   DEFAULT_FREQUENCY,
-  DEFAULT_AGE_OF_MORTGAGE,
+  DEFAULT_AGE_OF_MORTGAGE_TYPE,
 } from '@/constants/mortgage';
-import { Frequency, AgeOfMortgage } from '@/app/src/types/mortgageTypes';
+import {
+  Frequency,
+  AgeOfMortgageType,
+  AgeOfMortgage,
+} from '@/app/src/types/mortgageTypes';
 
 export function formatNumber(n: number): string {
   return n.toLocaleString(undefined, {
@@ -43,8 +47,41 @@ export function useBaseMortgageInputForm() {
   const [deposit, setDeposit] = useState<number>(DEFAULT_DEPOSIT);
   const [rate, setRate] = useState<number>(DEFAULT_RATE);
   const [termYears, setTermYears] = useState<number>(DEFAULT_TERM_YEARS);
-  const [frequency, setFrequency] = useState<Frequency>(DEFAULT_FREQUENCY);
-  const [ageOfMortgage, setAgeOfMortgage] = useState<AgeOfMortgage>(DEFAULT_AGE_OF_MORTGAGE);
+  const [frequency, setFrequencyState] = useState<Frequency>(DEFAULT_FREQUENCY);
+  const skipNextEffect = useRef(false);
+
+  const [ageOfMortgageType, setAgeOfMortgageType] = useState<AgeOfMortgageType>(
+    DEFAULT_AGE_OF_MORTGAGE_TYPE
+  );
+  
+  // Custom setFrequency that also updates ageOfMortgage when needed
+  const setFrequency = (newFrequency: Frequency) => {
+    setFrequencyState(newFrequency);
+    // If we're currently showing 'first' payment, update ageOfMortgage immediately
+    if (ageOfMortgageType === 'first') {
+      skipNextEffect.current = true; // Skip the useEffect since we're handling it here
+      setAgeOfMortgage(AgeOfMortgage.MakeFromFrequency(newFrequency));
+    }
+  };
+  
+  const [ageOfMortgage, setAgeOfMortgage] = useState<AgeOfMortgage>(
+    AgeOfMortgage.MakeFromFrequency(DEFAULT_FREQUENCY)
+  );
+
+  // Sync ageOfMortgageType changes with AgeOfMortgage object
+  useEffect(() => {
+    // Skip if we already handled this update in setFrequency
+    if (skipNextEffect.current) {
+      skipNextEffect.current = false;
+      return;
+    }
+    
+    if (ageOfMortgageType === 'first') {
+      setAgeOfMortgage(AgeOfMortgage.MakeFromFrequency(frequency));
+    } else {
+      setAgeOfMortgage(AgeOfMortgage.MakeFromEnum(ageOfMortgageType));
+    }
+  }, [ageOfMortgageType, frequency]);
 
   const validationErrors: ValidationErrors = {};
 
@@ -63,7 +100,8 @@ export function useBaseMortgageInputForm() {
     setRate(DEFAULT_RATE);
     setTermYears(DEFAULT_TERM_YEARS);
     setFrequency(DEFAULT_FREQUENCY);
-    setAgeOfMortgage(DEFAULT_AGE_OF_MORTGAGE);
+    setAgeOfMortgageType(DEFAULT_AGE_OF_MORTGAGE_TYPE);
+    setAgeOfMortgage(AgeOfMortgage.MakeFromFrequency(DEFAULT_FREQUENCY));
   };
 
   return {
@@ -78,6 +116,8 @@ export function useBaseMortgageInputForm() {
     setTermYears,
     frequency,
     setFrequency,
+    ageOfMortgageType,
+    setAgeOfMortgageType,
     ageOfMortgage,
     setAgeOfMortgage,
 
