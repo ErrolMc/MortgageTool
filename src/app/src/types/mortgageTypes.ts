@@ -6,6 +6,7 @@ export interface MortgageInputs {
   frequency: Frequency;
   ageOfMortgage: AgeOfMortgage;
   salePrice: number;
+  extraRepayments: number;
 }
 
 export class MortgageResults {
@@ -26,6 +27,12 @@ export class MortgageResults {
   totalPrincipalGainedFromPaymentsUpToAgeOfMortgage: number;
   remainingBalance: number;
 
+  // Extra repayments calculations
+  totalExtraRepayments: number;
+  interestSaved: number;
+  timeSavedYears: number;
+  newTotalPaid: number;
+
   // Sale calculations
   netProceeds: number; // this is the take home after covering the remaining mortgage
 
@@ -41,6 +48,10 @@ export class MortgageResults {
     this.totalInterestPaidUpToAgeOfMortgage = 0;
     this.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage = 0;
     this.remainingBalance = 0;
+    this.totalExtraRepayments = 0;
+    this.interestSaved = 0;
+    this.timeSavedYears = 0;
+    this.newTotalPaid = 0;
     this.netProceeds = 0;
   }
 

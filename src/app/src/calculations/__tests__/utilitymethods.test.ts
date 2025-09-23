@@ -5,7 +5,6 @@ import {
   calculatePerPeriodRate,
   calculateTotalPaymentAmount,
   calculateTotalInterestAmount,
-  calculateRemainingBalance,
   calculateNetProceeds,
   calculateMortgageRepaymentForPeriod,
   calculateRemainingBalanceAtAgeOfMortgage,
@@ -181,33 +180,6 @@ describe('Utility Functions', () => {
       const expectedTotalInterestAmount = 0;
       expect(calculateTotalInterestAmount(totalPaymentAmount, loanAmount)).toBe(
         expectedTotalInterestAmount
-      );
-    });
-  });
-
-  describe('calculateRemainingBalance', () => {
-    it('should calculate remaining balance correctly', () => {
-      const loanAmount = 400000;
-      const principalGained = 174234;
-      const expectedRemainingBalance = 225766;
-      expect(calculateRemainingBalance(loanAmount, principalGained)).toBe(
-        expectedRemainingBalance
-      );
-    });
-    it('should handle negative values correctly', () => {
-      const loanAmount = 400000;
-      const principalGained = -174234;
-      const expectedRemainingBalance = 400000;
-      expect(calculateRemainingBalance(loanAmount, principalGained)).toBe(
-        expectedRemainingBalance
-      );
-    });
-    it('should handle negative values correctly 2', () => {
-      const loanAmount = -400000;
-      const principalGained = 174234;
-      const expectedRemainingBalance = 0;
-      expect(calculateRemainingBalance(loanAmount, principalGained)).toBe(
-        expectedRemainingBalance
       );
     });
   });

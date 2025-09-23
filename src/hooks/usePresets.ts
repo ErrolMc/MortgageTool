@@ -16,6 +16,7 @@ export interface MortgagePreset {
     
     // Regular mortgage data
     deposit?: number;
+    extraRepayments?: number;
     
     // Split mortgage specific data
     person1Deposit?: number;

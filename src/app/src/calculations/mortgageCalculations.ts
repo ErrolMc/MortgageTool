@@ -16,6 +16,7 @@ import {
   calculateTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage,
   calculateTotalInterestPaidFromPaymentsUpToAgeOfMortgage,
   calculateNetProceeds,
+  calculateMortgageWithExtraRepayments,
 } from './mortgageCalculationUtilities';
 
 // Main calculation function
@@ -33,22 +34,33 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResults {
   const totalPaid = calculateTotalPaymentAmount(paymentForPeriod, totalPeriods);
   const totalInterest = calculateTotalInterestAmount(totalPaid, loanAmount);
 
-  // values that change with age of mortgage
-  const { remainingBalance, startOfPeriodBalance } =
-    calculateRemainingBalanceAtAgeOfMortgage(
-      loanAmount,
-      paymentForPeriod,
-      periodRate,
-      periodsPerYear,
-      inputs.ageOfMortgage
-    );
+  // Calculate extra repayments impact
+  const extraRepaymentsResult = calculateMortgageWithExtraRepayments(
+    loanAmount,
+    periodRate,
+    totalPeriods,
+    inputs.extraRepayments,
+    periodsPerYear
+  );
 
-  const interestFromOnePaymentAtAgeOfMortgage =
-    calculateInterestForOnePaymentAtAgeOfMortgage(
-      startOfPeriodBalance,
-      periodRate,
-      inputs.ageOfMortgage
-    );
+  // values that change with age of mortgage
+  const {
+    remainingBalance,
+    startOfPeriodBalance,
+  } = calculateRemainingBalanceAtAgeOfMortgage(
+    loanAmount,
+    paymentForPeriod,
+    periodRate,
+    periodsPerYear,
+    inputs.ageOfMortgage,
+    inputs.extraRepayments
+  );
+
+  const interestFromOnePaymentAtAgeOfMortgage = calculateInterestForOnePaymentAtAgeOfMortgage(
+    startOfPeriodBalance,
+    periodRate,
+    inputs.ageOfMortgage
+  );
 
   const principalFromOnePaymentAtAgeOfMortgage =
     calculatePrincipalForOnePaymentAtAgeOfMortgage(
@@ -89,5 +101,9 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResults {
     remainingBalance,
     totalEquityAtAgeOfMortgage,
     netProceeds,
+    totalExtraRepayments: extraRepaymentsResult.totalExtraRepayments,
+    interestSaved: extraRepaymentsResult.interestSaved,
+    timeSavedYears: extraRepaymentsResult.timeSavedYears,
+    newTotalPaid: extraRepaymentsResult.newTotalPaid,
   } as MortgageResults;
 }

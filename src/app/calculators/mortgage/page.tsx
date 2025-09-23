@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  useMortgageCalculator,
-  formatCurrency,
-} from './useMortgageCalculator';
+import { useMortgageCalculator, formatCurrency } from './useMortgageCalculator';
 import { Frequency, AgeOfMortgageType } from '@/app/src/types/mortgageTypes';
 import {
   formatInputNumber,
@@ -13,7 +10,11 @@ import { ResultsCard, ResultsGrid } from '@/components/ui/ResultsCard';
 import { NumberFormField } from '@/components/ui/FormField';
 import { usePresets, type MortgagePreset } from '@/hooks/usePresets';
 import { PresetManager } from '@/components/ui/PresetManager';
-import { INPUT_CONSTRAINTS, FREQUENCY_LABEL, YEAR_OPTIONS } from '@/app/src/calculations/utilityMethods';
+import {
+  INPUT_CONSTRAINTS,
+  FREQUENCY_LABEL,
+  YEAR_OPTIONS,
+} from '@/app/src/calculations/utilityMethods';
 
 export default function MortgageCalculatorPage() {
   const {
@@ -23,6 +24,9 @@ export default function MortgageCalculatorPage() {
     setDeposit,
     salePrice,
     setSalePrice,
+    extraRepayments,
+    setExtraRepayments,
+
     rate,
     setRate,
     termYears,
@@ -48,6 +52,7 @@ export default function MortgageCalculatorPage() {
     ageOfMortgage,
     deposit,
     salePrice,
+    extraRepayments,
   } as MortgagePreset['data'];
 
   const handleLoadPreset = (preset: MortgagePreset) => {
@@ -60,6 +65,8 @@ export default function MortgageCalculatorPage() {
     if (preset.data.deposit !== undefined) setDeposit(preset.data.deposit);
     if (preset.data.salePrice !== undefined)
       setSalePrice(preset.data.salePrice);
+    if (preset.data.extraRepayments !== undefined)
+      setExtraRepayments(preset.data.extraRepayments);
   };
 
   return (
@@ -74,7 +81,6 @@ export default function MortgageCalculatorPage() {
       </header>
 
       <div className="grid gap-6 sm:grid-cols-2">
-        
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <h2 className="text-lg font-medium">Input Details</h2>
@@ -86,7 +92,7 @@ export default function MortgageCalculatorPage() {
               Reset to defaults
             </button>
           </div>
-          
+
           <NumberFormField
             label="House price"
             id="house-price"
@@ -161,6 +167,19 @@ export default function MortgageCalculatorPage() {
             </div>
           </div>
 
+          <NumberFormField
+            label="Extra repayments"
+            id="extra-repayments"
+            value={extraRepayments}
+            onChange={setExtraRepayments}
+            error={validationErrors.extraRepayments}
+            min={0}
+            step={10}
+            formatValue={formatInputNumber}
+            parseValue={parseInputNumber}
+            helpText={`Additional amount to pay each ${frequency === 'yearly' ? 'year' : frequency}`}
+          />
+
           <div className="border-t border-black/10 dark:border-white/15 pt-4">
             <PresetManager
               presets={presets}
@@ -185,7 +204,9 @@ export default function MortgageCalculatorPage() {
               </label>
               <select
                 value={ageOfMortgageType}
-                onChange={e => setAgeOfMortgageType(e.target.value as AgeOfMortgageType)}
+                onChange={e =>
+                  setAgeOfMortgageType(e.target.value as AgeOfMortgageType)
+                }
                 className="w-full rounded-md border border-black/10 dark:border-white/15 bg-black/5 dark:bg-white/5 px-3 py-2 text-sm text-black dark:text-white [&>option]:bg-black/5 [&>option]:dark:bg-white/5 [&>option]:text-black [&>option]:dark:text-white"
                 style={{
                   backgroundColor: 'var(--background)',
@@ -205,13 +226,21 @@ export default function MortgageCalculatorPage() {
                 <span className="text-black/70 dark:text-white/70">
                   Principal{' '}
                 </span>
-                <span>{formatCurrency(results.principalFromOnePaymentAtAgeOfMortgage)}</span>
+                <span>
+                  {formatCurrency(
+                    results.principalFromOnePaymentAtAgeOfMortgage
+                  )}
+                </span>
               </div>
               <div className="text-sm">
                 <span className="text-black/70 dark:text-white/70">
                   Interest{' '}
                 </span>
-                <span>{formatCurrency(results.interestFromOnePaymentAtAgeOfMortgage)}</span>
+                <span>
+                  {formatCurrency(
+                    results.interestFromOnePaymentAtAgeOfMortgage
+                  )}
+                </span>
               </div>
             </div>
             <p className="text-xs text-black/60 dark:text-white/60 mt-2">
@@ -219,18 +248,20 @@ export default function MortgageCalculatorPage() {
             </p>
           </ResultsCard>
 
-          <ResultsCard
-            title={`Progress at ${ageOfMortgage.timeLabel}`}
-          >
+          <ResultsCard title={`Progress at ${ageOfMortgage.timeLabel}`}>
             <ResultsGrid
               items={[
                 {
                   label: 'Interest paid to date',
-                  value: formatCurrency(results.totalInterestPaidUpToAgeOfMortgage),
+                  value: formatCurrency(
+                    results.totalInterestPaidUpToAgeOfMortgage
+                  ),
                 },
                 {
                   label: 'Principal gained from payments to date',
-                  value: formatCurrency(results.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage),
+                  value: formatCurrency(
+                    results.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage
+                  ),
                 },
                 {
                   label: 'Equity',
@@ -255,7 +286,10 @@ export default function MortgageCalculatorPage() {
                   label: 'Principal',
                   value: formatCurrency(results.loanAmount),
                 },
-                { label: 'Interest', value: formatCurrency(results.totalInterest) },
+                {
+                  label: 'Interest',
+                  value: formatCurrency(results.totalInterest),
+                },
                 {
                   label: 'Number of payments',
                   value: results.totalPeriods.toLocaleString(),
@@ -263,6 +297,35 @@ export default function MortgageCalculatorPage() {
               ]}
             />
           </ResultsCard>
+
+          {extraRepayments > 0 && (
+            <ResultsCard title="Extra Repayments Impact">
+              <ResultsGrid
+                items={[
+                  {
+                    label: 'Total extra repayments',
+                    value: formatCurrency(results.totalExtraRepayments),
+                  },
+                  {
+                    label: 'Interest saved',
+                    value: formatCurrency(results.interestSaved),
+                  },
+                  {
+                    label: 'Time saved',
+                    value: `${results.timeSavedYears.toFixed(1)} years`,
+                  },
+                  {
+                    label: 'New total paid',
+                    value: formatCurrency(results.newTotalPaid),
+                  },
+                ]}
+              />
+              <p className="text-xs text-black/60 dark:text-white/60 mt-2">
+                Based on paying {formatCurrency(extraRepayments)} extra each{' '}
+                {frequency === 'yearly' ? 'year' : frequency}
+              </p>
+            </ResultsCard>
+          )}
 
           <p className="text-xs text-black/60 dark:text-white/60">
             Note: Uses a nominal annual rate divided by the selected frequency.

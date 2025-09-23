@@ -46,16 +46,6 @@ export function calculateTotalInterestAmount(
   return Math.max(0, totalPaymentAmount - loanAmount);
 }
 
-export function calculateRemainingBalance(
-  loanAmount: number,
-  principalGained: number
-) {
-  if (loanAmount <= 0) {
-    return 0;
-  }
-  return loanAmount - Math.max(0, principalGained);
-}
-
 export function calculateNetProceeds(
   salePrice: number,
   remainingBalance: number
@@ -80,31 +70,6 @@ export function calculateMortgageRepaymentForPeriod(
   return (
     (loanAmount * periodRate) / (1 - Math.pow(1 + periodRate, -totalPeriods))
   );
-}
-
-export function calculateRemainingBalanceAtAgeOfMortgage(
-  loanAmount: number,
-  paymentForPeriod: number,
-  periodRate: number,
-  periodsPerYear: number,
-  ageOfMortgage: AgeOfMortgage
-): { remainingBalance: number; startOfPeriodBalance: number } {
-  const totalPeriods: number = calculateTotalPeriods(
-    ageOfMortgage.ageYears,
-    periodsPerYear
-  );
-
-  // Calculate total principal and interest paid up to the selected year
-  let startOfPeriodBalance: number = loanAmount;
-  let remainingBalance: number = loanAmount;
-  for (let i = 0; i < totalPeriods; i++) {
-    startOfPeriodBalance = remainingBalance;
-    const periodInterest: number = remainingBalance * periodRate;
-    const periodPrincipal: number = paymentForPeriod - periodInterest;
-    remainingBalance -= periodPrincipal;
-  }
-
-  return { remainingBalance, startOfPeriodBalance };
 }
 
 export function calculateInterestForOnePaymentAtAgeOfMortgage(
@@ -158,4 +123,121 @@ export function calculateTotalInterestPaidFromPaymentsUpToAgeOfMortgage(
   );
   const totalPaid = calculateTotalPaymentAmount(paymentForPeriod, totalPeriods);
   return totalPaid - totalPrincipalGainedFromPaymentsUpToAgeOfMortgage;
+}
+
+export function calculateRemainingBalanceAtAgeOfMortgage(
+  loanAmount: number,
+  paymentForPeriod: number,
+  periodRate: number,
+  periodsPerYear: number,
+  ageOfMortgage: AgeOfMortgage,
+  extraRepayments: number = 0
+): {
+  remainingBalance: number;
+  startOfPeriodBalance: number;
+} {
+  const totalPeriods: number = calculateTotalPeriods(
+    ageOfMortgage.ageYears,
+    periodsPerYear
+  );
+
+  let startOfPeriodBalance: number = loanAmount;
+  let remainingBalance: number = loanAmount;
+
+  for (let i = 0; i < totalPeriods; i++) {
+    startOfPeriodBalance = remainingBalance;
+
+    const periodInterest: number = remainingBalance * periodRate;
+    const periodPrincipal: number = Math.min(
+      Math.max(0, paymentForPeriod - periodInterest),
+      remainingBalance
+    );
+
+    remainingBalance -= periodPrincipal;
+
+    const extraPaymentThisPeriod = Math.min(extraRepayments, remainingBalance);
+    remainingBalance -= extraPaymentThisPeriod;
+
+    if (remainingBalance <= 0.01) {
+      remainingBalance = 0;
+      break;
+    }
+  }
+
+  return {
+    remainingBalance,
+    startOfPeriodBalance,
+  };
+}
+
+// extra repayments calculation functions
+export function calculateMortgageWithExtraRepayments(
+  loanAmount: number,
+  periodRate: number,
+  totalPeriods: number,
+  extraRepayments: number,
+  periodsPerYear: number
+): {
+  newTotalPeriods: number;
+  newTotalPaid: number;
+  totalExtraRepayments: number;
+  interestSaved: number;
+  timeSavedYears: number;
+} {
+  const regularPayment = calculateMortgageRepaymentForPeriod(
+    loanAmount,
+    periodRate,
+    totalPeriods
+  );
+
+  const originalTotalPaid = calculateTotalPaymentAmount(regularPayment, totalPeriods);
+
+  if (extraRepayments <= 0) {
+    return {
+      newTotalPeriods: totalPeriods,
+      newTotalPaid: calculateTotalPaymentAmount(regularPayment, totalPeriods),
+      totalExtraRepayments: 0,
+      interestSaved: 0,
+      timeSavedYears: 0,
+    };
+  }
+
+  // Calculate how many periods it would take to pay off the loan with extra repayments (applied before interest)
+  let remainingBalance = loanAmount;
+  let periodsElapsed = 0;
+  let totalExtraPaid = 0;
+  let totalRegularPaid = 0;
+
+  // Safety check to prevent infinite loops
+  while (remainingBalance > 0.01 && periodsElapsed < totalPeriods * 2) {
+    const interestPayment = remainingBalance * periodRate;
+    const principalFromRegularPayment = Math.min(
+      Math.max(0, regularPayment - interestPayment),
+      remainingBalance
+    );
+
+    // Track the actual regular payment made this period. On the final period
+    // this can be less than the scheduled regularPayment
+    totalRegularPaid += interestPayment + principalFromRegularPayment;
+    remainingBalance -= principalFromRegularPayment;
+
+    const extraPaymentThisPeriod = Math.min(extraRepayments, remainingBalance);
+    remainingBalance -= extraPaymentThisPeriod;
+    totalExtraPaid += extraPaymentThisPeriod;
+
+    periodsElapsed++;
+  }
+
+  const newTotalPeriods = periodsElapsed;
+  const newTotalPaid = totalRegularPaid + totalExtraPaid;
+  const interestSaved = originalTotalPaid - newTotalPaid;
+  const timeSavedYears = (totalPeriods - newTotalPeriods) / periodsPerYear;
+
+  return {
+    newTotalPeriods,
+    newTotalPaid,
+    totalExtraRepayments: totalExtraPaid,
+    interestSaved: Math.max(0, interestSaved),
+    timeSavedYears: Math.max(0, timeSavedYears),
+  };
 }

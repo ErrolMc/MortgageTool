@@ -16,6 +16,7 @@ describe('Mortgage Calculations', () => {
       frequency: 'monthly',
       ageOfMortgage: AgeOfMortgage.MakeFromEnum('5'),
       salePrice: 800000,
+      extraRepayments: 0,
     } as MortgageInputs;
 
     const results: MortgageResults = calculateMortgage(inputs);
@@ -40,6 +41,7 @@ describe('Mortgage Calculations', () => {
       frequency: 'monthly',
       ageOfMortgage: AgeOfMortgage.MakeFromEnum('5'),
       salePrice: 650000,
+      extraRepayments: 0,
     } as MortgageInputs;
 
     const results: MortgageResults = calculateMortgage(inputs);

@@ -7,9 +7,10 @@ import {
 import { calculateMortgage } from '@/app/src/calculations/mortgageCalculations';
 import { MortgageInputs, MortgageResults } from '@/app/src/types/mortgageTypes';
 
-// Extend ValidationErrors for sale price
+// Extend ValidationErrors for sale price and extra repayments
 interface MortgageValidationErrors extends ValidationErrors {
   salePrice?: string;
+  extraRepayments?: string;
 }
 
 // Re-export for convenience
@@ -35,8 +36,9 @@ export function useMortgageCalculator() {
     resetForm: baseResetForm,
   } = useBaseMortgageInputForm();
 
-  // Add sale price state
+  // Add sale price and extra repayments state
   const [salePrice, setSalePrice] = useState<number>(0);
+  const [extraRepayments, setExtraRepayments] = useState<number>(0);
 
   // Extended validation for sale price
   const validationErrors: MortgageValidationErrors = {
@@ -45,6 +47,9 @@ export function useMortgageCalculator() {
 
   if (salePrice < 0)
     validationErrors.salePrice = 'Sale price cannot be negative';
+  
+  if (extraRepayments < 0)
+    validationErrors.extraRepayments = 'Extra repayments cannot be negative';
 
   const results: MortgageResults = useMemo(() => {
     const inputs: MortgageInputs = {
@@ -55,14 +60,16 @@ export function useMortgageCalculator() {
       frequency,
       salePrice,
       ageOfMortgage,
+      extraRepayments,
     };
 
     return calculateMortgage(inputs);
-  }, [price, deposit, rate, termYears, frequency, salePrice, ageOfMortgage]);
+  }, [price, deposit, rate, termYears, frequency, salePrice, ageOfMortgage, extraRepayments]);
 
   const resetForm = () => {
     baseResetForm();
     setSalePrice(0);
+    setExtraRepayments(0);
   };
 
   return {
@@ -73,6 +80,8 @@ export function useMortgageCalculator() {
     setDeposit,
     salePrice,
     setSalePrice,
+    extraRepayments,
+    setExtraRepayments,
     rate,
     setRate,
     termYears,
