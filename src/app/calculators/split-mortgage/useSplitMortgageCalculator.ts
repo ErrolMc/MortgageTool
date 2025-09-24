@@ -88,6 +88,7 @@ export function useSplitMortgageCalculator() {
       frequency,
       ageOfMortgage,
       salePrice,
+      extraRepayments: 0,
 
       // Split-specific inputs
       person1Deposit,
