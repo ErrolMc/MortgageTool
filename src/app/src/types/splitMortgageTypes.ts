@@ -49,7 +49,13 @@ export class SplitMortgageIndividualResult {
   }
 }
 
-export interface SplitMortgageResults extends MortgageResults {
+export class SplitMortgageResults extends MortgageResults {
   person1: SplitMortgageIndividualResult;
   person2: SplitMortgageIndividualResult;
+
+  constructor(){
+    super();
+    this.person1 = new SplitMortgageIndividualResult(0);
+    this.person2 = new SplitMortgageIndividualResult(0);
+  }
 }

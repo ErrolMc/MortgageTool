@@ -1,6 +1,6 @@
 import {
-  type MortgageInputs,
-  type MortgageResults,
+  MortgageInputs,
+  MortgageResults,
 } from '../types/mortgageTypes';
 import {
   calculateLoanAmount,
@@ -84,7 +84,7 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResults {
 
   const netProceeds = calculateNetProceeds(inputs.salePrice, remainingBalance);
 
-  return {
+  return Object.assign(new MortgageResults(), {
     paymentForPeriod,
     totalPaid,
     loanAmount,
@@ -101,5 +101,5 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResults {
     interestSaved: extraRepaymentsResult.interestSaved,
     timeSavedYears: extraRepaymentsResult.timeSavedYears,
     newTotalPaid: extraRepaymentsResult.newTotalPaid,
-  } as MortgageResults;
+  });
 }
