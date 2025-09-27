@@ -36,15 +36,15 @@ export class SplitMortgageIndividualResult {
     this.saleProceeds = 0;
   }
 
-  public get totalPaidAtAgeOfMortgage(): number {
+  public totalPaidAtAgeOfMortgage(): number {
     return this.interestForPeriodAtAgeOfMortgage + this.principalGainedFromPaymentsAtAgeOfMortgage;
   }
 
-  public get totalEquityAtAgeOfMortgage(): number {
+  public totalEquityAtAgeOfMortgage(): number {
     return this._deposit + this.principalGainedFromPaymentsAtAgeOfMortgage;
   }
 
-  public get totalEquity(): number {
+  public totalEquity(): number {
     return this._deposit + this.totalPrincipalPaidFromPayments;
   }
 }

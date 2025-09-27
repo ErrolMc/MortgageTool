@@ -71,13 +71,14 @@ export function calculateSplitMortgage(
 
   // calculate sale proceeds
   {
-    const totalEquityInProperty = person1Result.totalEquityAtAgeOfMortgage + person2Result.totalEquityAtAgeOfMortgage;
+    const totalEquity = baseResults.totalEquityAtAgeOfMortgage;
+    const totalEquityInProperty = person1Result.totalEquityAtAgeOfMortgage() + person2Result.totalEquityAtAgeOfMortgage();
     
-    const person1EquityShare = person1Result.totalEquityAtAgeOfMortgage / totalEquityInProperty;
+    const person1EquityShare = person1Result.totalEquityAtAgeOfMortgage() / totalEquityInProperty;
     person1Result.saleProceeds =
       baseResults.netProceeds * person1EquityShare;
 
-    const person2EquityShare = person2Result.totalEquityAtAgeOfMortgage / totalEquityInProperty;
+    const person2EquityShare = person2Result.totalEquityAtAgeOfMortgage() / totalEquityInProperty;
     person2Result.saleProceeds =
       baseResults.netProceeds * person2EquityShare;
   }

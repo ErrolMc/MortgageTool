@@ -265,7 +265,7 @@ export default function MortgageCalculatorPage() {
                 },
                 {
                   label: 'Equity',
-                  value: formatCurrency(results.totalEquityAtAgeOfMortgage),
+                  value: formatCurrency(results.totalEquityAtAgeOfMortgage()),
                 },
                 {
                   label: 'Remaining balance',

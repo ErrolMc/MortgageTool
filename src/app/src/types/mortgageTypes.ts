@@ -55,7 +55,7 @@ export class MortgageResults {
     this.netProceeds = 0;
   }
 
-  public get totalEquityAtAgeOfMortgage(): number {
+  public totalEquityAtAgeOfMortgage(): number {
     return (
       this.loanAmount + this.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage
     );

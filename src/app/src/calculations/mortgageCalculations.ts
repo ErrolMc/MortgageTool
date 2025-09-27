@@ -82,9 +82,6 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResults {
       periodsPerYear
     );
 
-  const totalEquityAtAgeOfMortgage: number =
-    inputs.deposit + totalPrincipalGainedFromPaymentsUpToAgeOfMortgage;
-
   const netProceeds = calculateNetProceeds(inputs.salePrice, remainingBalance);
 
   return {
@@ -99,7 +96,6 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResults {
     totalInterestPaidUpToAgeOfMortgage,
     totalPrincipalGainedFromPaymentsUpToAgeOfMortgage,
     remainingBalance,
-    totalEquityAtAgeOfMortgage,
     netProceeds,
     totalExtraRepayments: extraRepaymentsResult.totalExtraRepayments,
     interestSaved: extraRepaymentsResult.interestSaved,

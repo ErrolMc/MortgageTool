@@ -308,13 +308,13 @@ export default function SplitMortgageCalculatorPage() {
                 {
                   label: 'Person 1 equity',
                   value: formatCurrency(
-                    results.person1.totalEquityAtAgeOfMortgage
+                    results.person1.totalEquityAtAgeOfMortgage()
                   ),
                 },
                 {
                   label: 'Person 2 equity',
                   value: formatCurrency(
-                    results.person2.totalEquityAtAgeOfMortgage
+                    results.person2.totalEquityAtAgeOfMortgage()
                   ),
                 },
               ]}
