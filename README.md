@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MortgageTool
+
+A Next.js mortgage calculator app with two tools:
+
+- **Mortgage Repayment Calculator** for standard repayment projections
+- **Split Mortgage Calculator** for two-person deposit, repayment share, and equity split scenarios
+
+The app is built with TypeScript, React, and Tailwind CSS.
+
+## Features
+
+- Calculate repayment amount by frequency (yearly, monthly, fortnightly, weekly)
+- View principal vs interest breakdown at a selected point in the mortgage
+- Track totals such as interest paid, principal repaid, equity, and remaining balance
+- Model extra repayments
+- Save/load/delete presets for regular and split mortgage scenarios
+
+## Routes
+
+- `/` – calculator landing page
+- `/calculators/mortgage` – standard mortgage repayment calculator
+- `/calculators/split-mortgage` – split mortgage calculator for two people
+
+## Tech Stack
+
+- Next.js 15 (App Router)
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Jest + Testing Library
+- ESLint + Prettier
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 20+
+- npm 10+
+
+### Install
+
+```bash
+npm install
+```
+
+### Run locally
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- `npm run dev` – start development server (Turbopack)
+- `npm run build` – create production build
+- `npm run start` – run production server
+- `npm run lint` – run ESLint
+- `npm run format` – format project with Prettier
+- `npm run format:check` – check formatting
+- `npm run test` – run Jest tests
+- `npm run test:watch` – run tests in watch mode
+- `npm run test:coverage` – generate coverage report
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```text
+src/
+	app/
+		calculators/
+			mortgage/
+			split-mortgage/
+		src/
+			calculations/
+			types/
+	components/ui/
+	constants/
+	hooks/
+	calculations/__tests__/
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Testing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Run all tests:
 
-## Deploy on Vercel
+```bash
+npm test
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Run coverage:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run test:coverage
+```
+
+## Notes
+
+- Presets are managed by the app hooks and are intended for quick scenario comparison.
+- This tool provides estimates and should not be treated as financial advice.

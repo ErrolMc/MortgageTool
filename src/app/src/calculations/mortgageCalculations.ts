@@ -1,7 +1,4 @@
-import {
-  MortgageInputs,
-  MortgageResults,
-} from '../types/mortgageTypes';
+import { MortgageInputs, MortgageResults } from '../types/mortgageTypes';
 import {
   calculateLoanAmount,
   calculatePeriodsPerYear,
@@ -47,6 +44,7 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResults {
   const {
     remainingBalance,
     startOfPeriodBalance,
+    totalExtraRepaymentsAtAgeOfMortgage,
   } = calculateRemainingBalanceAtAgeOfMortgage(
     loanAmount,
     paymentForPeriod,
@@ -56,11 +54,12 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResults {
     inputs.extraRepayments
   );
 
-  const interestFromOnePaymentAtAgeOfMortgage = calculateInterestForOnePaymentAtAgeOfMortgage(
-    startOfPeriodBalance,
-    periodRate,
-    inputs.ageOfMortgage
-  );
+  const interestFromOnePaymentAtAgeOfMortgage =
+    calculateInterestForOnePaymentAtAgeOfMortgage(
+      startOfPeriodBalance,
+      periodRate,
+      inputs.ageOfMortgage
+    );
 
   const principalFromOnePaymentAtAgeOfMortgage =
     calculatePrincipalForOnePaymentAtAgeOfMortgage(
@@ -71,7 +70,8 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResults {
   const totalPrincipalGainedFromPaymentsUpToAgeOfMortgage =
     calculateTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage(
       loanAmount,
-      remainingBalance
+      remainingBalance,
+      totalExtraRepaymentsAtAgeOfMortgage
     );
 
   const totalInterestPaidUpToAgeOfMortgage =
@@ -84,22 +84,23 @@ export function calculateMortgage(inputs: MortgageInputs): MortgageResults {
 
   const netProceeds = calculateNetProceeds(inputs.salePrice, remainingBalance);
 
-  return Object.assign(new MortgageResults(), {
-    paymentForPeriod,
-    totalPaid,
-    loanAmount,
-    totalInterest,
-    totalPeriods,
-    periodsPerYear,
-    principalFromOnePaymentAtAgeOfMortgage,
-    interestFromOnePaymentAtAgeOfMortgage,
-    totalInterestPaidUpToAgeOfMortgage,
-    totalPrincipalGainedFromPaymentsUpToAgeOfMortgage,
-    remainingBalance,
-    netProceeds,
-    totalExtraRepayments: extraRepaymentsResult.totalExtraRepayments,
-    interestSaved: extraRepaymentsResult.interestSaved,
-    timeSavedYears: extraRepaymentsResult.timeSavedYears,
-    newTotalPaid: extraRepaymentsResult.newTotalPaid,
-  });
+  const result = new MortgageResults();
+  result.paymentForPeriod = paymentForPeriod;
+  result.totalPaid = totalPaid;
+  result.loanAmount = loanAmount;
+  result.totalInterest = totalInterest;
+  result.totalPeriods = totalPeriods;
+  result.periodsPerYear = periodsPerYear;
+  result.principalFromOnePaymentAtAgeOfMortgage = principalFromOnePaymentAtAgeOfMortgage;
+  result.interestFromOnePaymentAtAgeOfMortgage = interestFromOnePaymentAtAgeOfMortgage;
+  result.totalInterestPaidUpToAgeOfMortgage = totalInterestPaidUpToAgeOfMortgage;
+  result.principalGainedFromRegularPaymentsUpToAgeOfMortgage = totalPrincipalGainedFromPaymentsUpToAgeOfMortgage;
+  result.remainingBalance = remainingBalance;
+  result.netProceeds = netProceeds;
+  result.totalExtraRepayments = extraRepaymentsResult.totalExtraRepayments;
+  result.interestSaved = extraRepaymentsResult.interestSaved;
+  result.timeSavedYears = extraRepaymentsResult.timeSavedYears;
+  result.newTotalPaid = extraRepaymentsResult.newTotalPaid;
+  result.totalPrincipalGainedFromExtraRepaymentsUpToAgeOfMortgage = totalExtraRepaymentsAtAgeOfMortgage;
+  return result;
 }

@@ -513,11 +513,13 @@ describe('Utility Functions', () => {
     it('should calculate total principal gained from payments up to age of mortgage correctly', () => {
       const loanAmount = 400000;
       const remainingBalance = 300000;
+      const totalExtraRepayments = 0;
       const expectedTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage = 100000;
       expect(
         calculateTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage(
           loanAmount,
-          remainingBalance
+          remainingBalance,
+          totalExtraRepayments
         )
       ).toBeCloseTo(expectedTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage);
     });
@@ -525,11 +527,13 @@ describe('Utility Functions', () => {
     it('should handle negative values correctly 1', () => {
       const loanAmount = 400000;
       const remainingBalance = -300000;
+      const totalExtraRepayments = 0;
       const expectedTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage = 400000;
       expect(
         calculateTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage(
           loanAmount,
-          remainingBalance
+          remainingBalance,
+          totalExtraRepayments
         )
       ).toBeCloseTo(expectedTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage);
     });
@@ -537,11 +541,13 @@ describe('Utility Functions', () => {
     it('should handle negative values correctly 2', () => {
       const loanAmount = -400000;
       const remainingBalance = 300000;
+      const totalExtraRepayments = 0;
       const expectedTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage = 0;
       expect(
         calculateTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage(
           loanAmount,
-          remainingBalance
+          remainingBalance,
+          totalExtraRepayments
         )
       ).toBeCloseTo(expectedTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage);
     });

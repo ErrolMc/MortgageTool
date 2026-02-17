@@ -23,6 +23,8 @@ export interface MortgagePreset {
     person2Deposit?: number;
     person1RepaymentShare?: number;
     salePrice?: number;
+    person1ExtraRepayments?: number;
+    person2ExtraRepayments?: number;
   };
 }
 

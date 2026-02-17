@@ -5,6 +5,7 @@ import {
 import { calculateMortgage } from './mortgageCalculations';
 import { MortgageResults } from '../types/mortgageTypes';
 import { SplitMortgageIndividualResult } from '../types/splitMortgageTypes';
+import { calculateMortgageWithExtraRepayments, calculatePerPeriodRate, calculateRemainingBalanceAtAgeOfMortgage } from './mortgageCalculationUtilities';
 
 export function calculateSplitMortgage(
   inputs: SplitMortgageInputs
@@ -37,12 +38,12 @@ export function calculateSplitMortgage(
   // calculate amounts gained from payments up to age
   {
     // principal
-    person1Result.principalGainedFromPaymentsAtAgeOfMortgage =
-      baseResults.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage *
+    person1Result.principalGainedFromRegularPaymentsAtAgeOfMortgage =
+      baseResults.principalGainedFromRegularPaymentsUpToAgeOfMortgage *
       inputs.person1RepaymentShare;
-    person2Result.principalGainedFromPaymentsAtAgeOfMortgage =
-      baseResults.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage -
-      person1Result.principalGainedFromPaymentsAtAgeOfMortgage;
+    person2Result.principalGainedFromRegularPaymentsAtAgeOfMortgage =
+      baseResults.principalGainedFromRegularPaymentsUpToAgeOfMortgage -
+      person1Result.principalGainedFromRegularPaymentsAtAgeOfMortgage;
 
     // interest
     person1Result.interestPaidFromPaymentsAtAgeOfMortgage =
@@ -69,9 +70,47 @@ export function calculateSplitMortgage(
       baseResults.totalInterest - person1Result.totalInterestPaidFromPayments;
   }
 
+  // calculate extra repayments impact
+  {
+    const totalExtraRepayments = inputs.person1ExtraRepayments + inputs.person2ExtraRepayments;
+    
+    if (totalExtraRepayments > 0) {
+      const extraRepaymentResult = calculateMortgageWithExtraRepayments(
+        baseResults.loanAmount,
+        calculatePerPeriodRate(inputs.rate, baseResults.periodsPerYear),
+        baseResults.totalPeriods,
+        totalExtraRepayments,
+        baseResults.periodsPerYear
+      );
+
+      // Split extra repayment results proportionally
+      const person1ExtraShare = inputs.person1ExtraRepayments / totalExtraRepayments;
+      const person2ExtraShare = inputs.person2ExtraRepayments / totalExtraRepayments;
+
+      person1Result.principalGainedFromRegularPaymentsAtAgeOfMortgage = baseResults.principalGainedFromRegularPaymentsUpToAgeOfMortgage * person1ExtraShare;
+      person2Result.principalGainedFromRegularPaymentsAtAgeOfMortgage = baseResults.principalGainedFromRegularPaymentsUpToAgeOfMortgage * person2ExtraShare;
+
+      person1Result.totalExtraRepayments = extraRepaymentResult.totalExtraRepayments * person1ExtraShare;
+      person1Result.interestSaved = extraRepaymentResult.interestSaved * person1ExtraShare;
+      person1Result.timeSavedYears = extraRepaymentResult.timeSavedYears * person1ExtraShare;
+
+      person2Result.totalExtraRepayments = extraRepaymentResult.totalExtraRepayments * person2ExtraShare;
+      person2Result.interestSaved = extraRepaymentResult.interestSaved * person2ExtraShare;
+      person2Result.timeSavedYears = extraRepaymentResult.timeSavedYears * person2ExtraShare;
+
+      // Calculate new total paid for each person
+      // This is: (person's share of regular payments over shortened term) + (person's extra repayments)
+      const shortenedTermTotalPaidForRegularPayments = baseResults.paymentForPeriod * extraRepaymentResult.newTotalPeriods;
+      const person1ShortenedTermPaidFromRegularPayments = shortenedTermTotalPaidForRegularPayments * inputs.person1RepaymentShare;
+      const person2ShortenedTermPaidFromRegularPayments = shortenedTermTotalPaidForRegularPayments - person1ShortenedTermPaidFromRegularPayments;
+
+      person1Result.newTotalPaid = person1ShortenedTermPaidFromRegularPayments + person1Result.totalExtraRepayments;
+      person2Result.newTotalPaid = person2ShortenedTermPaidFromRegularPayments + person2Result.totalExtraRepayments;
+    }
+  }
+
   // calculate sale proceeds
   {
-    const totalEquity = baseResults.totalEquityAtAgeOfMortgage();
     const totalEquityInProperty = person1Result.totalEquityAtAgeOfMortgage() + person2Result.totalEquityAtAgeOfMortgage();
     
     const person1EquityShare = person1Result.totalEquityAtAgeOfMortgage() / totalEquityInProperty;

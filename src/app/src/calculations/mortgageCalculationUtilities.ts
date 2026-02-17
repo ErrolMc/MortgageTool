@@ -97,9 +97,11 @@ export function calculatePrincipalForOnePaymentAtAgeOfMortgage(
 // Calculate progress up to a specific year
 export function calculateTotalPrincipalGainedFromPaymentsUpToAgeOfMortgage(
   loanAmount: number,
-  remainingBalance: number
+  remainingBalance: number,
+  totalExtraRepayments: number
 ) {
-  return Math.max(0, loanAmount - Math.max(0, remainingBalance));
+  const remainingBalanceWithoutExtraRepayments = Math.max(0, remainingBalance) + Math.max(0, totalExtraRepayments);
+  return Math.max(0, loanAmount - remainingBalanceWithoutExtraRepayments);
 }
 
 export function calculateTotalInterestPaidFromPaymentsUpToAgeOfMortgage(
@@ -135,12 +137,14 @@ export function calculateRemainingBalanceAtAgeOfMortgage(
 ): {
   remainingBalance: number;
   startOfPeriodBalance: number;
+  totalExtraRepaymentsAtAgeOfMortgage: number;
 } {
   const totalPeriods: number = calculateTotalPeriods(
     ageOfMortgage.ageYears,
     periodsPerYear
   );
 
+  let totalExtraRepaymentsAtAgeOfMortgage: number = 0;
   let startOfPeriodBalance: number = loanAmount;
   let remainingBalance: number = loanAmount;
 
@@ -157,6 +161,7 @@ export function calculateRemainingBalanceAtAgeOfMortgage(
 
     const extraPaymentThisPeriod = Math.min(extraRepayments, remainingBalance);
     remainingBalance -= extraPaymentThisPeriod;
+    totalExtraRepaymentsAtAgeOfMortgage += extraPaymentThisPeriod;
 
     if (remainingBalance <= 0.01) {
       remainingBalance = 0;
@@ -167,6 +172,7 @@ export function calculateRemainingBalanceAtAgeOfMortgage(
   return {
     remainingBalance,
     startOfPeriodBalance,
+    totalExtraRepaymentsAtAgeOfMortgage,
   };
 }
 

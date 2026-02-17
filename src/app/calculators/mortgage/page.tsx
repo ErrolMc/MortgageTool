@@ -260,12 +260,12 @@ export default function MortgageCalculatorPage() {
                 {
                   label: 'Principal gained from payments to date',
                   value: formatCurrency(
-                    results.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage
+                    results.principalGainedFromRegularPaymentsUpToAgeOfMortgage
                   ),
                 },
                 {
                   label: 'Equity',
-                  value: formatCurrency(results.totalEquityAtAgeOfMortgage()),
+                  value: formatCurrency(results.totalEquityAtAgeOfMortgage(deposit)),
                 },
                 {
                   label: 'Remaining balance',

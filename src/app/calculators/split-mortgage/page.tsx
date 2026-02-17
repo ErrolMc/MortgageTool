@@ -26,6 +26,10 @@ export default function SplitMortgageCalculatorPage() {
     setPerson1RepaymentShare,
     salePrice,
     setSalePrice,
+    person1ExtraRepayments,
+    setPerson1ExtraRepayments,
+    person2ExtraRepayments,
+    setPerson2ExtraRepayments,
     rate,
     setRate,
     termYears,
@@ -60,6 +64,8 @@ export default function SplitMortgageCalculatorPage() {
     person2Deposit,
     person1RepaymentShare,
     salePrice,
+    person1ExtraRepayments,
+    person2ExtraRepayments,
   } as MortgagePreset['data'];
 
   const handleLoadPreset = (preset: MortgagePreset) => {
@@ -77,6 +83,10 @@ export default function SplitMortgageCalculatorPage() {
       setPerson1RepaymentShare(preset.data.person1RepaymentShare);
     if (preset.data.salePrice !== undefined)
       setSalePrice(preset.data.salePrice);
+    if (preset.data.person1ExtraRepayments !== undefined)
+      setPerson1ExtraRepayments(preset.data.person1ExtraRepayments);
+    if (preset.data.person2ExtraRepayments !== undefined)
+      setPerson2ExtraRepayments(preset.data.person2ExtraRepayments);
   };
 
   return (
@@ -180,6 +190,36 @@ export default function SplitMortgageCalculatorPage() {
           <div className="text-xs text-black/60 dark:text-white/60 p-2 bg-black/5 dark:bg-white/5 rounded">
             Person 1: {person1RepaymentSharePercent.toFixed(0)}% | Person 2:{' '}
             {person2RepaymentSharePercent.toFixed(0)}%
+          </div>
+
+          <div className="space-y-3">
+            <h3 className="font-medium text-sm">Extra Repayments</h3>
+
+            <NumberFormField
+              label="Person 1 extra repayments"
+              id="person1-extra-repayments"
+              value={person1ExtraRepayments}
+              onChange={setPerson1ExtraRepayments}
+              error={validationErrors.person1ExtraRepayments}
+              min={0}
+              step={10}
+              formatValue={formatInputNumber}
+              parseValue={parseInputNumber}
+              helpText={`Additional amount Person 1 will pay each ${frequency === 'yearly' ? 'year' : frequency}`}
+            />
+
+            <NumberFormField
+              label="Person 2 extra repayments"
+              id="person2-extra-repayments"
+              value={person2ExtraRepayments}
+              onChange={setPerson2ExtraRepayments}
+              error={validationErrors.person2ExtraRepayments}
+              min={0}
+              step={10}
+              formatValue={formatInputNumber}
+              parseValue={parseInputNumber}
+              helpText={`Additional amount Person 2 will pay each ${frequency === 'yearly' ? 'year' : frequency}`}
+            />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -303,53 +343,34 @@ export default function SplitMortgageCalculatorPage() {
           <ResultsCard
             title={`Equity split at ${ageOfMortgage.timeLabel}`}
           >
-            <ResultsGrid
-              items={[
-                {
-                  label: 'Person 1 equity',
-                  value: formatCurrency(
-                    results.person1.totalEquityAtAgeOfMortgage()
-                  ),
-                },
-                {
-                  label: 'Person 2 equity',
-                  value: formatCurrency(
-                    results.person2.totalEquityAtAgeOfMortgage()
-                  ),
-                },
-              ]}
-            />
-
-            <div className="border-t border-black/10 dark:border-white/15 my-4" />
-
-            <ResultsGrid
-              items={[
-                {
-                  label: 'Person 1 total interest',
-                  value: formatCurrency(
-                    results.person1.interestPaidFromPaymentsAtAgeOfMortgage
-                  ),
-                },
-                {
-                  label: 'Person 2 total interest',
-                  value: formatCurrency(
-                    results.person2.interestPaidFromPaymentsAtAgeOfMortgage
-                  ),
-                },
-                {
-                  label: 'Person 1 principal gained',
-                  value: formatCurrency(
-                    results.person1.principalGainedFromPaymentsAtAgeOfMortgage
-                  ),
-                },
-                {
-                  label: 'Person 2 principal gained',
-                  value: formatCurrency(
-                    results.person2.principalGainedFromPaymentsAtAgeOfMortgage
-                  ),
-                },
-              ]}
-            />
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-black/10 dark:border-white/15">
+                    <th className="text-left py-2 pr-4 text-black/70 dark:text-white/70">Metric</th>
+                    <th className="text-right py-2 px-4 text-black/70 dark:text-white/70">Person 1</th>
+                    <th className="text-right py-2 pl-4 text-black/70 dark:text-white/70">Person 2</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b border-black/5 dark:border-white/10">
+                    <td className="py-2 pr-4 text-black/70 dark:text-white/70">Equity</td>
+                    <td className="text-right py-2 px-4 font-medium">{formatCurrency(results.person1.totalEquityAtAgeOfMortgage())}</td>
+                    <td className="text-right py-2 pl-4 font-medium">{formatCurrency(results.person2.totalEquityAtAgeOfMortgage())}</td>
+                  </tr>
+                  <tr className="border-b border-black/5 dark:border-white/10">
+                    <td className="py-2 pr-4 text-black/70 dark:text-white/70">Total interest paid</td>
+                    <td className="text-right py-2 px-4 font-medium">{formatCurrency(results.person1.interestPaidFromPaymentsAtAgeOfMortgage)}</td>
+                    <td className="text-right py-2 pl-4 font-medium">{formatCurrency(results.person2.interestPaidFromPaymentsAtAgeOfMortgage)}</td>
+                  </tr>
+                  <tr>
+                    <td className="py-2 pr-4 text-black/70 dark:text-white/70">Principal gained</td>
+                    <td className="text-right py-2 px-4 font-medium">{formatCurrency(results.person1.principalGainedFromRegularPaymentsAtAgeOfMortgage)}</td>
+                    <td className="text-right py-2 pl-4 font-medium">{formatCurrency(results.person2.principalGainedFromRegularPaymentsAtAgeOfMortgage)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
 
             <div className="border-t border-black/10 dark:border-white/15 my-4" />
 
@@ -385,6 +406,71 @@ export default function SplitMortgageCalculatorPage() {
               ]}
             />
           </ResultsCard>
+
+          {(person1ExtraRepayments > 0 || person2ExtraRepayments > 0) && (
+            <ResultsCard title="Extra Repayments Impact">
+              <ResultsGrid
+                items={[
+                  {
+                    label: 'Total extra repayments',
+                    value: formatCurrency(results.person1.totalExtraRepayments + results.person2.totalExtraRepayments),
+                  },
+                  {
+                    label: 'Total interest saved',
+                    value: formatCurrency(results.person1.interestSaved + results.person2.interestSaved),
+                  },
+                  {
+                    label: 'Total time saved',
+                    value: `${(results.person1.timeSavedYears + results.person2.timeSavedYears).toFixed(1)} years`,
+                  },
+                  {
+                    label: 'New total paid',
+                    value: formatCurrency(results.person1.newTotalPaid + results.person2.newTotalPaid),
+                  },
+                ]}
+              />
+
+              <div className="border-t border-black/10 dark:border-white/15 my-4" />
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-black/10 dark:border-white/15">
+                      <th className="text-left py-2 pr-4 text-black/70 dark:text-white/70">Metric</th>
+                      <th className="text-right py-2 px-4 text-black/70 dark:text-white/70">Person 1</th>
+                      <th className="text-right py-2 pl-4 text-black/70 dark:text-white/70">Person 2</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr className="border-b border-black/5 dark:border-white/10">
+                      <td className="py-2 pr-4 text-black/70 dark:text-white/70">Total extra repayments</td>
+                      <td className="text-right py-2 px-4 font-medium">{formatCurrency(results.person1.totalExtraRepayments)}</td>
+                      <td className="text-right py-2 pl-4 font-medium">{formatCurrency(results.person2.totalExtraRepayments)}</td>
+                    </tr>
+                    <tr className="border-b border-black/5 dark:border-white/10">
+                      <td className="py-2 pr-4 text-black/70 dark:text-white/70">Interest saved</td>
+                      <td className="text-right py-2 px-4 font-medium">{formatCurrency(results.person1.interestSaved)}</td>
+                      <td className="text-right py-2 pl-4 font-medium">{formatCurrency(results.person2.interestSaved)}</td>
+                    </tr>
+                    <tr className="border-b border-black/5 dark:border-white/10">
+                      <td className="py-2 pr-4 text-black/70 dark:text-white/70">Time saved</td>
+                      <td className="text-right py-2 px-4 font-medium">{results.person1.timeSavedYears.toFixed(1)} years</td>
+                      <td className="text-right py-2 pl-4 font-medium">{results.person2.timeSavedYears.toFixed(1)} years</td>
+                    </tr>
+                    <tr>
+                      <td className="py-2 pr-4 text-black/70 dark:text-white/70">New total paid</td>
+                      <td className="text-right py-2 px-4 font-medium">{formatCurrency(results.person1.newTotalPaid)}</td>
+                      <td className="text-right py-2 pl-4 font-medium">{formatCurrency(results.person2.newTotalPaid)}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-xs text-black/60 dark:text-white/60 mt-2">
+                Based on Person 1 paying {formatCurrency(person1ExtraRepayments)} and Person 2 paying {formatCurrency(person2ExtraRepayments)} extra each{' '}
+                {frequency === 'yearly' ? 'year' : frequency}
+              </p>
+            </ResultsCard>
+          )}
 
           <div className="rounded-lg border border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20 p-4">
             <h3 className="font-medium text-blue-800 dark:text-blue-200 mb-2">

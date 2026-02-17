@@ -29,7 +29,7 @@ describe('Mortgage Calculations', () => {
     expect(results.interestFromOnePaymentAtAgeOfMortgage).toBeCloseTo(2591.30);
     expect(results.remainingBalance).toBeCloseTo(555421.59);
     expect(results.totalInterestPaidUpToAgeOfMortgage).toBeCloseTo(161863.08);
-    expect(results.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage).toBeCloseTo(44578.41);
+    expect(results.principalGainedFromRegularPaymentsUpToAgeOfMortgage).toBeCloseTo(44578.41);
   });
 
   it('should calculate mortgage correctly', () => {
@@ -55,6 +55,6 @@ describe('Mortgage Calculations', () => {
     expect(results.principalFromOnePaymentAtAgeOfMortgage).toBeCloseTo(566.26);
     expect(results.remainingBalance).toBeCloseTo(370281.06);
     expect(results.totalInterestPaidUpToAgeOfMortgage).toBeCloseTo(107908.72);
-    expect(results.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage).toBeCloseTo(29718.94);
+    expect(results.principalGainedFromRegularPaymentsUpToAgeOfMortgage).toBeCloseTo(29718.94);
   });
 });

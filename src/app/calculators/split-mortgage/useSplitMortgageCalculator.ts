@@ -15,8 +15,8 @@ import {
 // Extend ValidationErrors for split mortgage specific fields
 interface SplitValidationErrors extends ValidationErrors {
   salePrice?: string;
-  person1VoluntaryRepayment?: string;
-  person2VoluntaryRepayment?: string;
+  person1ExtraRepayments?: string;
+  person2ExtraRepayments?: string;
 }
 
 // Re-export for convenience
@@ -51,6 +51,8 @@ export function useSplitMortgageCalculator() {
   const [person1RepaymentShare, setPerson1RepaymentShare] =
     useState<number>(0.5);
   const [salePrice, setSalePrice] = useState<number>(0);
+  const [person1ExtraRepayments, setPerson1ExtraRepayments] = useState<number>(0);
+  const [person2ExtraRepayments, setPerson2ExtraRepayments] = useState<number>(0);
 
   const totalDeposit = person1Deposit + person2Deposit;
   const splitPrincipal: number = Math.max(0, (price || 0) - totalDeposit);
@@ -77,6 +79,10 @@ export function useSplitMortgageCalculator() {
       'Repayment share cannot exceed 100%';
   if (salePrice < 0)
     validationErrors.salePrice = 'Sale price cannot be negative';
+  if (person1ExtraRepayments < 0)
+    validationErrors.person1ExtraRepayments = 'Person 1 extra repayments cannot be negative';
+  if (person2ExtraRepayments < 0)
+    validationErrors.person2ExtraRepayments = 'Person 2 extra repayments cannot be negative';
 
   const results = useMemo((): SplitMortgageResults => {
     const inputs: SplitMortgageInputs = {
@@ -88,12 +94,14 @@ export function useSplitMortgageCalculator() {
       frequency,
       ageOfMortgage,
       salePrice,
-      extraRepayments: 0,
+      extraRepayments: person1ExtraRepayments + person2ExtraRepayments,
 
       // Split-specific inputs
       person1Deposit,
       person2Deposit,
       person1RepaymentShare,
+      person1ExtraRepayments,
+      person2ExtraRepayments,
     };
 
     return calculateSplitMortgage(inputs);
@@ -108,6 +116,8 @@ export function useSplitMortgageCalculator() {
     frequency,
     ageOfMortgage,
     salePrice,
+    person1ExtraRepayments,
+    person2ExtraRepayments,
   ]);
 
   const resetForm = () => {
@@ -116,6 +126,8 @@ export function useSplitMortgageCalculator() {
     setPerson2Deposit(baseInputForm.deposit / 2);
     setPerson1RepaymentShare(0.5);
     setSalePrice(0);
+    setPerson1ExtraRepayments(0);
+    setPerson2ExtraRepayments(0);
   };
 
   return {
@@ -130,6 +142,10 @@ export function useSplitMortgageCalculator() {
     setPerson1RepaymentShare,
     salePrice,
     setSalePrice,
+    person1ExtraRepayments,
+    setPerson1ExtraRepayments,
+    person2ExtraRepayments,
+    setPerson2ExtraRepayments,
     rate,
     setRate,
     termYears,

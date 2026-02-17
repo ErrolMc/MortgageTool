@@ -24,7 +24,8 @@ export class MortgageResults {
 
   // Progress calculations
   totalInterestPaidUpToAgeOfMortgage: number;
-  totalPrincipalGainedFromPaymentsUpToAgeOfMortgage: number;
+  principalGainedFromRegularPaymentsUpToAgeOfMortgage: number;
+  totalPrincipalGainedFromExtraRepaymentsUpToAgeOfMortgage: number;
   remainingBalance: number;
 
   // Extra repayments calculations
@@ -32,7 +33,7 @@ export class MortgageResults {
   interestSaved: number;
   timeSavedYears: number;
   newTotalPaid: number;
-
+  
   // Sale calculations
   netProceeds: number; // this is the take home after covering the remaining mortgage
 
@@ -46,19 +47,25 @@ export class MortgageResults {
     this.principalFromOnePaymentAtAgeOfMortgage = 0;
     this.interestFromOnePaymentAtAgeOfMortgage = 0;
     this.totalInterestPaidUpToAgeOfMortgage = 0;
-    this.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage = 0;
+    this.principalGainedFromRegularPaymentsUpToAgeOfMortgage = 0;
+    this.totalPrincipalGainedFromExtraRepaymentsUpToAgeOfMortgage = 0;
     this.remainingBalance = 0;
     this.totalExtraRepayments = 0;
     this.interestSaved = 0;
     this.timeSavedYears = 0;
     this.newTotalPaid = 0;
+
     this.netProceeds = 0;
   }
 
-  public totalEquityAtAgeOfMortgage(): number {
+  public totalEquityAtAgeOfMortgage(deposit: number): number {
     return (
-      this.loanAmount + this.totalPrincipalGainedFromPaymentsUpToAgeOfMortgage
+      deposit + this.totalPrincipalGainedAtAgeOfMortgage()
     );
+  }
+
+  public totalPrincipalGainedAtAgeOfMortgage(): number {
+    return this.principalGainedFromRegularPaymentsUpToAgeOfMortgage + this.totalPrincipalGainedFromExtraRepaymentsUpToAgeOfMortgage;
   }
 }
 
